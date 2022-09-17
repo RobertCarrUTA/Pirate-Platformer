@@ -30,7 +30,7 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = 0
 
         if keys[pygame.K_UP]:
-            self.jump()           # We move in the y direction because up is a movement along the y axis   - -1 moves up
+            self.jump()
         
 
     # @brief A function for applying gravity to the player
