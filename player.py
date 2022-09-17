@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity                = 0.8
         self.jump_speed             = -13   # Remember that to move up in the y-direction, it needs to be negative
 
-    # @brief importing all of the character animation frames
+    # @brief A function for importing all of the character animation frames
     def import_character_assets(self):
         character_path = "graphics/character/"
         # Creating a dictionary of animations: we have a folder with folders named idle, run, jump and fall
@@ -27,6 +27,17 @@ class Player(pygame.sprite.Sprite):
         for animation in self.animations.keys():
             full_path = character_path + animation
             self.animations[animation] = import_folder(full_path)
+
+    # @brief A function for animating the player
+    def animate(self):
+        animation = self.animations['run']
+
+        # Loop over the frame index
+        self.frame_index += self.animation_speed
+        if self.frame_index >= len(animation):
+            self.frame_index = 0
+        
+        self.image = animation[int(self.frame_index)]
 
     # @brief A function for getting player input
     def get_input(self):
@@ -58,4 +69,4 @@ class Player(pygame.sprite.Sprite):
     # @brief A function for updating the player
     def update(self):
         self.get_input()
-        self.apply_gravity()
+        self.animate()

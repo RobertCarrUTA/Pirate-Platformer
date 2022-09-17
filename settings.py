@@ -1,16 +1,16 @@
 # This acts as a level map, if there is an X, there will be a surface there on our level
 # If there is a P, it will represent the player
 level_map = [
-"                        ",
-"                        ",
-" XX    XXX         XX   ",
-" XX P                   ",
-" XXXX         XX     XX ",
-" XXXX       XX          ",
-" XX    X XXXX   XX XX   ",
-"       X XXXXX  XX XXX  ",
-"    XXXX XXXXXX XX XXXX ",
-"XXXXXXXX XXXXXX XX XXXX ",
+"                          ",
+"                          ",
+" XX    XXX         XX     ",
+" XX P                     ",
+" XXXX        XXX     XX   ",
+" XXXX       XX            ",
+" XX    X  XXXX    XX XX   ",
+"       X  XXXXX   XX XXX  ",
+"    XXXX  XXXXXX  XX XXXX ",
+"XXXXXXXX  XXXXXX  XX XXXX ",
 ]
 
 tile_size       = 64
