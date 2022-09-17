@@ -47,5 +47,4 @@ class Player(pygame.sprite.Sprite):
     # @brief A function for updating the player
     def update(self):
         self.get_input()
-        self.rect.x += self.direction.x * self.movement_multiplier_x
         self.apply_gravity()

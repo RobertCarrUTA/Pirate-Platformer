@@ -4,8 +4,8 @@ from settings import tile_size, screen_width
 from player import Player
 
 class Level:
+    # @brief A function for initializing the Level
     def __init__(self, level_data, surface):
-        
         # Level setup
         self.display_surface = surface
         self.setup_level(level_data)
@@ -13,9 +13,9 @@ class Level:
         # Moving the level left or right
         self.world_shift = 0
 
-    # A function that draws our tiles anywhere it finds an X in level_map
+    # @brief A function that draws our tiles anywhere it finds an X in level_map
     def setup_level(self, layout):
-        self.tiles = pygame.sprite.Group()
+        self.tiles  = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
 
         for row_index, row in enumerate(layout): # enumerate() lets us know what row we are on
@@ -31,7 +31,7 @@ class Level:
                     player_sprite = Player((x, y))
                     self.player.add(player_sprite)
     
-    # Scroll the level in the x direction
+    # @brief A function that scrolls the level in the x direction based on player position
     def scroll_x(self):
         player      = self.player.sprite    # Lets us know of the player
         player_x    = player.rect.centerx   # Lets us know where the player is located
@@ -55,12 +55,37 @@ class Level:
             self.world_shift = 0
             player.speed = player.movement_multiplier_x
 
+    # @brief A function for horizontal movement collision
+    def horizontal_movement_collision(self):
+        player = self.player.sprite
+        player.rect.x += player.direction.x * player.movement_multiplier_x
+
+        # Testing for all the possible tiles we could collide with
+        for sprite in self.tiles.sprites():
+            # The is player colliding with the rectangle of a tile
+            if sprite.rect.colliderect(player.rect): # Using .colliderect() rather than .spritecollide() makes this easier
+                
+                # In Pygame we cannot directly detect where the collision is taking place, so to work around this we have to
+                #   separate our collision and movement into vertical and horizontal movements as well as collisions.
+                #
+                # To do this we use the below if condition. If we detect a the player colliding with a rectangle of a tile,
+                #   we can use the direction of the player to determine if the collision is happening on the left or the right.
+                #   Lets say we detect a collision while the player is moving left, after that we need to move the player to the
+                #   right side of the obstacle it collided with. This will allow us to work around this issue in Pygame.
+                
+                if player.direction.x < 0:      # Player is moving left
+                    player.rect.left = sprite.rect.right
+                elif player.direction.x > 0:    # Player is moving right
+                    player.rect.right = sprite.rect.left
+
+    # @brief A function for running the Level
     def run(self):
         # Displaying the level tiles
         self.tiles.update(self.world_shift)
         self.tiles.draw(self.display_surface)
+        self.scroll_x()
 
         # Displaying the player
         self.player.update()
+        self.horizontal_movement_collision()
         self.player.draw(self.display_surface)
-        self.scroll_x()
