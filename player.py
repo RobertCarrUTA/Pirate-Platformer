@@ -9,8 +9,8 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0, 0) # A vector that allows our player to move - arguments (x, y)
     
         # Movement multipliers that multiply the movement in update(self)
-        self.movement_multiplier_x = 3
-        self.movement_multiplier_y = 3
+        self.movement_multiplier_x = 6
+        self.movement_multiplier_y = 6
 
     def get_input(self):
         # This method of getting input may cause slight delay, look into a more
