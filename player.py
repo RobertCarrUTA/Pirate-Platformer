@@ -10,10 +10,9 @@ class Player(pygame.sprite.Sprite):
         
         # Player Movement
         self.direction              = pygame.math.Vector2(0, 0)     # A vector that allows our player to move - arguments (x, y)
-        self.movement_multiplier_x  = 6     # Movement multipliers that multiply the movement in update(self)
-        self.movement_multiplier_y  = 6
+        self.movement_multiplier_x  = 6     # Movement multiplier that multiplies the movement in update(self)
         self.gravity                = 0.8
-        self.jump_speed             = -16   # Remember that to move up in the y-direction, it needs to be negative
+        self.jump_speed             = -13   # Remember that to move up in the y-direction, it needs to be negative
 
     # @brief A function for getting player input
     def get_input(self):
@@ -25,20 +24,19 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = 1  # We move in the x direction because right is a movement along the x axis
         elif keys[pygame.K_LEFT]:
             self.direction.x = -1 # We move in the x direction because left is a movement along the x axis
-        elif keys[pygame.K_UP]:
-            self.jump()           # We move in the y direction because up is a movement along the y axis   - -1 moves up
         else:
             # We need to slow the player down to a halt when they stop pressing keys to move
             # This should slow the player down to 0 movement instead of instantly stopping
-            if self.direction.x > 0:
-                self.direction.x -= 0.1
-            if self.direction.x < 0:
-                self.direction.x += 0.1
+            self.direction.x = 0
 
-    # @brief A function for getting player input
+        if keys[pygame.K_UP]:
+            self.jump()           # We move in the y direction because up is a movement along the y axis   - -1 moves up
+        
+
+    # @brief A function for applying gravity to the player
     def apply_gravity(self):
         self.direction.y += self.gravity
-        self.rect.y += self.direction.y
+        self.rect.y      += self.direction.y
 
     # @brief A function that allows the player to jump
     def jump(self):

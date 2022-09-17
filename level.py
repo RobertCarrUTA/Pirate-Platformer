@@ -55,10 +55,12 @@ class Level:
             self.world_shift = 0
             player.speed = player.movement_multiplier_x
 
+    # TODO: There are some issues with this collision detection but it works fine enough for right now
+
     # @brief A function for horizontal movement collision
     def horizontal_movement_collision(self):
-        player = self.player.sprite
-        player.rect.x += player.direction.x * player.movement_multiplier_x
+        player          = self.player.sprite
+        player.rect.x   += player.direction.x * player.movement_multiplier_x
 
         # Testing for all the possible tiles we could collide with
         for sprite in self.tiles.sprites():
@@ -77,6 +79,22 @@ class Level:
                     player.rect.left = sprite.rect.right
                 elif player.direction.x > 0:    # Player is moving right
                     player.rect.right = sprite.rect.left
+    
+    # @brief A function for vertical movement collision
+    def vertical_movement_collision(self):
+        player = self.player.sprite
+        player.apply_gravity()
+
+        # Testing for all the possible tiles we could collide with
+        for sprite in self.tiles.sprites():
+            # The is player colliding with the rectangle of a tile
+            if sprite.rect.colliderect(player.rect):
+                if player.direction.y > 0:      # Player is moving downward
+                    player.rect.bottom = sprite.rect.top
+                    player.direction.y = 0      # We need to cancel gravity increasing if we are standing on top of a tile
+                elif player.direction.y < 0:    # Player is moving upward
+                    player.rect.top = sprite.rect.bottom
+                    player.direction.y = 0      # Make the player fall back down if we hit a ceiling
 
     # @brief A function for running the Level
     def run(self):
@@ -88,4 +106,5 @@ class Level:
         # Displaying the player
         self.player.update()
         self.horizontal_movement_collision()
+        self.vertical_movement_collision()
         self.player.draw(self.display_surface)
