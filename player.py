@@ -19,6 +19,7 @@ class Player(pygame.sprite.Sprite):
 
         # Player status
         self.status = "idle"
+        self.facing_right = True
 
     # @brief A function for importing all of the character animation frames
     def import_character_assets(self):
@@ -40,7 +41,13 @@ class Player(pygame.sprite.Sprite):
         if self.frame_index >= len(animation):
             self.frame_index = 0
         
-        self.image = animation[int(self.frame_index)]
+        image = animation[int(self.frame_index)]
+        if self.facing_right:
+            self.image = image
+        else:
+            flipped_image = pygame.transform.flip(image, True, False) # Arguments - (surface, do you want to flip it horizontally, do you want to flip it vertically)
+            self.image = flipped_image
+
 
     # @brief A function for getting player input
     def get_input(self):
@@ -49,9 +56,11 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_RIGHT]:
-            self.direction.x = 1  # We move in the x direction because right is a movement along the x axis
+            self.direction.x = 1        # We move in the x direction because right is a movement along the x axis
+            self.facing_right = True    # We have hit the right key, so we are now facing right
         elif keys[pygame.K_LEFT]:
-            self.direction.x = -1 # We move in the x direction because left is a movement along the x axis
+            self.direction.x = -1       # We move in the x direction because left is a movement along the x axis
+            self.facing_right = False   # We have hit the left key, so we are now facing left
         else:
             # We need to slow the player down to a halt when they stop pressing keys to move
             # This should slow the player down to 0 movement instead of instantly stopping
