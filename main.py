@@ -8,6 +8,7 @@ from settings import *  # Allows for us to access variables in settings.py
 from level import Level
 
 pygame.init()
+pygame.display.set_caption("Platformer") 
 screen          = pygame.display.set_mode((screen_width, screen_height))
 clock           = pygame.time.Clock()
 level           = Level(level_map, screen)
