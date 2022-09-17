@@ -1,9 +1,10 @@
 # This acts as a level map, if there is an X, there will be a surface there on our level
+# If there is a P, it will represent the player
 level_map = [
 "                        ",
 "                        ",
 " XX    XXX         XX   ",
-" XX                     ",
+" XX P                   ",
 " XXXX         XX     XX ",
 " XXXX       XX          ",
 " XX    X XXXX   XX XX   ",
