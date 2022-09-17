@@ -21,6 +21,17 @@ class Player(pygame.sprite.Sprite):
             self.direction.y = -1 # We move in the y direction because up is a movement along the y axis   - -1 moves up
         elif keys[pygame.K_DOWN]:
             self.direction.y = 1  # We move in the y direction because down is a movement along the y axis - 1 moves up
+        else:
+            # We need to slow the player down to a halt when they stop pressing keys to move
+            # This should slow the player down to 0 movement instead of instantly stopping
+            if self.direction.y > 0:
+                self.direction.y -= 0.1
+            if self.direction.y < 0:
+                self.direction.y += 0.1
+            if self.direction.x > 0:
+                self.direction.x -= 0.1
+            if self.direction.x < 0:
+                self.direction.x += 0.1
 
     def update(self):
         self.get_input()
