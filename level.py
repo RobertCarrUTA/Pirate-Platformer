@@ -30,6 +30,28 @@ class Level:
                 if cell == "P":
                     player_sprite = Player((x, y))
                     self.player.add(player_sprite)
+    
+    # Scroll the level in the x direction
+    def scroll_x(self):
+        player      = self.player.sprite    # Lets us know of the player
+        player_x    = player.rect.centerx   # Lets us know where the player is located
+        direction_x = player.direction.x    # Lets us know what direction the player is going to move
+
+        # If they player is moving out of the left side of the screen
+        #
+        # To simulate the background moving as a camera following the player, we need to shift the world by the
+        # players movement speed, and set the player movement to 0. This makes it look like a camera is following them
+        # We do "if player_x < 200 and direction_x < 0" because if we just did "if player_x < 200" we would never
+        # get out of that condition and we would scroll left forever. direction_x < 0 means we are moving to the left
+        if player_x < 200 and direction_x < 0:
+            self.world_shift = player.movement_multiplier_x # player.movement_multiplier_x is defined in the Player class
+            player.speed = 0
+        elif player_x > 1000 and direction_x > 0:
+            self.world_shift = -player.movement_multiplier_x
+            player.speed = 0
+        else:
+            self.world_shift = 0
+            player.speed = player.movement_multiplier_x
 
     def run(self):
         # Displaying the level tiles
@@ -39,3 +61,4 @@ class Level:
         # Displaying the player
         self.player.update()
         self.player.draw(self.display_surface)
+        self.scroll_x()
