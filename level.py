@@ -85,16 +85,21 @@ class Level:
         player = self.player.sprite
         player.apply_gravity()
 
-        # Testing for all the possible tiles we could collide with
-        for sprite in self.tiles.sprites():
-            # The is player colliding with the rectangle of a tile
-            if sprite.rect.colliderect(player.rect):
-                if player.direction.y > 0:      # Player is moving downward
+        for sprite in self.tiles.sprites():             # Testing for all the possible tiles we could collide with
+            if sprite.rect.colliderect(player.rect):    # The is player colliding with the rectangle of a tile
+                if player.direction.y > 0:              # Player is moving downward
                     player.rect.bottom = sprite.rect.top
-                    player.direction.y = 0      # We need to cancel gravity increasing if we are standing on top of a tile
-                elif player.direction.y < 0:    # Player is moving upward
+                    player.direction.y = 0              # We need to cancel gravity increasing if we are standing on top of a tile
+                    player.on_ground = True
+                elif player.direction.y < 0:            # Player is moving upward
                     player.rect.top = sprite.rect.bottom
-                    player.direction.y = 0      # Make the player fall back down if we hit a ceiling
+                    player.direction.y = 0              # Make the player fall back down if we hit a ceiling
+                    player.on_ceiling = True
+
+        if player.on_ground and player.direction.y < 0 or player.direction.y > 1: # If the player is jumping or falling, the player cannot be on the floor anymore
+            player.on_ground = False
+        if player.on_ceiling and player.direction.y > 0: # If the player is falling, they are no longer on the ceiling
+            player.on_ceiling = False
 
     # @brief A function for running the Level
     def run(self):

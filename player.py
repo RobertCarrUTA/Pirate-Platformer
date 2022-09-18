@@ -6,10 +6,10 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__()
         self.import_character_assets() # Importing the animation images
-        self.frame_index     = 0
-        self.animation_speed = 0.15
-        self.image = self.animations["idle"][self.frame_index]
-        self.rect = self.image.get_rect(topleft = position)
+        self.frame_index        = 0
+        self.animation_speed    = 0.15
+        self.image              = self.animations["idle"][self.frame_index]
+        self.rect               = self.image.get_rect(topleft = position)
         
         # Player Movement
         self.direction              = pygame.math.Vector2(0, 0)     # A vector that allows our player to move - arguments (x, y)
@@ -18,8 +18,12 @@ class Player(pygame.sprite.Sprite):
         self.jump_speed             = -13   # Remember that to move up in the y-direction, it needs to be negative
 
         # Player status
-        self.status = "idle"
-        self.facing_right = True
+        self.status         = "idle"
+        self.facing_right   = True
+        self.on_ground      = False
+        self.on_ceiling     = False
+        self.on_left        = False
+        self.on_right       = False
 
     # @brief A function for importing all of the character animation frames
     def import_character_assets(self):
@@ -47,7 +51,20 @@ class Player(pygame.sprite.Sprite):
         else:
             flipped_image = pygame.transform.flip(image, True, False) # Arguments - (surface, do you want to flip it horizontally, do you want to flip it vertically)
             self.image = flipped_image
-
+        
+        # Set the player rectangle
+        #   This stops our player from levitating on the floor. This happens because our animations without this can have the wrong origin point.
+        #   The animations can be different sizes, so each surface has a different dimension but our rect stays the same. Pygame alsways puts the surface on
+        #   the top left point of the rect, so it will look like the animation is floating a little bit.
+        #
+        #   We combat this by finding out what the player is colliding with, on_ground, etc., the we create a new rect on a new animation frame and set the
+        #   origin point to the collision point. We do the latter below.
+        if self.on_ground:
+            self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
+        elif self.on_ceiling:
+            self.rect = self.image.get_rect(midtop = self.rect.midtop)
+        else:
+            self.rect = self.image.get_rect(center = self.rect.center)
 
     # @brief A function for getting player input
     def get_input(self):
