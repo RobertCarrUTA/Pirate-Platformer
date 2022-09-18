@@ -19,11 +19,11 @@ class Player(pygame.sprite.Sprite):
 
         # Player status
         self.status         = "idle"
-        self.facing_right   = True
-        self.on_ground      = False
-        self.on_ceiling     = False
-        self.on_left        = False
-        self.on_right       = False
+        self.facing_right   = True  # Player defaults to face right, gets changed in get_input() in player.py based on player movement
+        self.on_ground      = False # Determined in level.py during vertical_movement_collision()
+        self.on_ceiling     = False # Determined in level.py during vertical_movement_collision()
+        self.on_left        = False # Determined in level.py during horizontal_movement_collision()
+        self.on_right       = False # Determined in level.py during horizontal_movement_collision()
 
     # @brief A function for importing all of the character animation frames
     def import_character_assets(self):
@@ -49,22 +49,29 @@ class Player(pygame.sprite.Sprite):
         if self.facing_right:
             self.image = image
         else:
-            flipped_image = pygame.transform.flip(image, True, False) # Arguments - (surface, do you want to flip it horizontally, do you want to flip it vertically)
-            self.image = flipped_image
+            flipped_image   = pygame.transform.flip(image, True, False) # Arguments - (surface, do you want to flip it horizontally, do you want to flip it vertically)
+            self.image      = flipped_image
         
         # Set the player rectangle
         #   This stops our player from levitating on the floor. This happens because our animations without this can have the wrong origin point.
-        #   The animations can be different sizes, so each surface has a different dimension but our rect stays the same. Pygame alsways puts the surface on
-        #   the top left point of the rect, so it will look like the animation is floating a little bit.
+        #       The animations can be different sizes, so each surface has a different dimension but our rect stays the same. Pygame alsways puts the surface on
+        #       the top left point of the rect, so it will look like the animation is floating a little bit.
         #
         #   We combat this by finding out what the player is colliding with, on_ground, etc., the we create a new rect on a new animation frame and set the
-        #   origin point to the collision point. We do the latter below.
-        if self.on_ground:
+        #       origin point to the collision point. We do the latter below.
+        if self.on_ground and self.on_right:
+            self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
+        elif self.on_ground and self.on_left:
+            self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
+        elif self.on_ground:
             self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
+        # Collisions with the ceiling
+        elif self.on_ceiling and self.on_right:
+            self.rect = self.image.get_rect(topright = self.rect.topright)
+        elif self.on_ceiling and self.on_left:
+            self.rect = self.image.get_rect(topleft = self.rect.topleft)
         elif self.on_ceiling:
             self.rect = self.image.get_rect(midtop = self.rect.midtop)
-        else:
-            self.rect = self.image.get_rect(center = self.rect.center)
 
     # @brief A function for getting player input
     def get_input(self):
@@ -73,11 +80,11 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_RIGHT]:
-            self.direction.x = 1        # We move in the x direction because right is a movement along the x axis
-            self.facing_right = True    # We have hit the right key, so we are now facing right
+            self.direction.x    = 1         # We move in the x direction because right is a movement along the x axis
+            self.facing_right   = True      # We have hit the right key, so we are now facing right
         elif keys[pygame.K_LEFT]:
-            self.direction.x = -1       # We move in the x direction because left is a movement along the x axis
-            self.facing_right = False   # We have hit the left key, so we are now facing left
+            self.direction.x    = -1        # We move in the x direction because left is a movement along the x axis
+            self.facing_right   = False     # We have hit the left key, so we are now facing left
         else:
             # We need to slow the player down to a halt when they stop pressing keys to move
             # This should slow the player down to 0 movement instead of instantly stopping

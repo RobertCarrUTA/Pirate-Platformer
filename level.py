@@ -12,6 +12,7 @@ class Level:
 
         # Moving the level left or right
         self.world_shift = 0
+        self.current_x   = 0
 
     # @brief A function that draws our tiles anywhere it finds an X in level_map
     def setup_level(self, layout):
@@ -55,8 +56,6 @@ class Level:
             self.world_shift = 0
             player.speed = player.movement_multiplier_x
 
-    # TODO: There are some issues with this collision detection but it works fine enough for right now
-
     # @brief A function for horizontal movement collision
     def horizontal_movement_collision(self):
         player          = self.player.sprite
@@ -75,10 +74,19 @@ class Level:
                 #   Lets say we detect a collision while the player is moving left, after that we need to move the player to the
                 #   right side of the obstacle it collided with. This will allow us to work around this issue in Pygame.
                 
-                if player.direction.x < 0:      # Player is moving left
-                    player.rect.left = sprite.rect.right
-                elif player.direction.x > 0:    # Player is moving right
-                    player.rect.right = sprite.rect.left
+                if player.direction.x < 0:      # Player is moving left and is colliding with the wall to the left
+                    player.rect.left    = sprite.rect.right
+                    player.on_left      = True
+                    self.current_x      = player.rect.left
+                elif player.direction.x > 0:     # Player is moving right and is colliding with the wall to the right
+                    player.rect.right   = sprite.rect.left
+                    player.on_right     = True
+                    self.current_x      = player.rect.right
+
+        if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):   # If the player is touching a wall to the left and stopped moving to the left
+            player.on_left  = False                                                             #   or moving to the right, we know we are not touching the left wall anymore
+        if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0): # If the player is touching a wall to the right and stopped moving to the left
+            player.on_right = False                                                             #   or moving to the right, we know we are not touching the right wall anymore
     
     # @brief A function for vertical movement collision
     def vertical_movement_collision(self):
