@@ -1,7 +1,10 @@
+from turtle import Vec2D
 import pygame
+from particles import ParticleEffect
 from tiles import Tile
 from settings import tile_size, screen_width
 from player import Player
+from particles import ParticleEffect
 
 class Level:
     # @brief A function for initializing the Level
@@ -13,6 +16,37 @@ class Level:
         # Moving the level left or right
         self.world_shift = 0
         self.current_x   = 0
+
+        # Dust
+        self.dust_sprite      = pygame.sprite.GroupSingle()
+        self.player_on_ground = False
+
+    # @brief A function that creates the jump particles
+    def create_jump_particles(self, position):
+        if self.player.sprite.facing_right:
+            position -= pygame.math.Vector2(10, 5)
+        else:
+            position -= pygame.math.Vector2(10, -5)
+
+        jump_particle_sprite = ParticleEffect(position, "jump")
+        self.dust_sprite.add(jump_particle_sprite)
+
+    # @brief A function to determine weather a player is on the ground
+    def get_player_on_ground(self):
+        if self.player.sprite.on_ground:
+            self.player_on_ground = True
+        else:
+            self.player_on_ground = False
+
+    # @brief A function to create the landing dust particles
+    def create_landing_dust(self):
+        if not self.player_on_ground and self.player.sprite.on_ground and not self.dust_sprite.sprites():
+            if self.player.sprite.facing_right:
+                offset = pygame.math.Vector2(10, 15)
+            else:
+                offset = pygame.math.Vector2(-10, 15)
+            fall_dust_particle = ParticleEffect(self.player.sprite.rect.midbottom - offset, "land")
+            self.dust_sprite.add(fall_dust_particle)
 
     # @brief A function that draws our tiles anywhere it finds an X in level_map
     def setup_level(self, layout):
@@ -29,7 +63,7 @@ class Level:
                     self.tiles.add(tile)
                 # If we find a cell in the row that has P, add a player sprite to that cell
                 if cell == "P":
-                    player_sprite = Player((x, y))
+                    player_sprite = Player((x, y), self.display_surface, self.create_jump_particles)
                     self.player.add(player_sprite)
     
     # @brief A function that scrolls the level in the x direction based on player position
@@ -111,6 +145,10 @@ class Level:
 
     # @brief A function for running the Level
     def run(self):
+        # Displaying the dust particles
+        self.dust_sprite.update(self.world_shift)
+        self.dust_sprite.draw(self.display_surface)
+
         # Displaying the level tiles
         self.tiles.update(self.world_shift)
         self.tiles.draw(self.display_surface)
@@ -119,5 +157,7 @@ class Level:
         # Displaying the player
         self.player.update()
         self.horizontal_movement_collision()
+        self.get_player_on_ground()
         self.vertical_movement_collision()
+        self.create_landing_dust()
         self.player.draw(self.display_surface)

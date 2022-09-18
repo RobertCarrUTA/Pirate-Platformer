@@ -1,9 +1,10 @@
+from turtle import position
 import pygame
 from support import import_folder
 
 class Player(pygame.sprite.Sprite):
     # @brief A function for initializing the Player
-    def __init__(self, position):
+    def __init__(self, position, surface, create_jump_particles):
         super().__init__()
         self.import_character_assets() # Importing the animation images
         self.frame_index        = 0
@@ -11,7 +12,14 @@ class Player(pygame.sprite.Sprite):
         self.image              = self.animations["idle"][self.frame_index]
         self.rect               = self.image.get_rect(topleft = position)
         
-        # Player Movement
+        # Dust particles
+        self.import_dust_run_particles()        # Importing the dust run particles
+        self.dust_frame_index        = 0
+        self.dust_animation_speed    = 0.15
+        self.display_surface         = surface  # surface is passed inside level.py in setup_level()
+        self.create_jump_particles = create_jump_particles
+
+        # Player movement
         self.direction              = pygame.math.Vector2(0, 0)     # A vector that allows our player to move - arguments (x, y)
         self.movement_multiplier_x  = 6     # Movement multiplier that multiplies the movement in update(self)
         self.gravity                = 0.8
@@ -35,6 +43,10 @@ class Player(pygame.sprite.Sprite):
         for animation in self.animations.keys():
             full_path = character_path + animation
             self.animations[animation] = import_folder(full_path)
+
+    # @brief A function to import the running dust particle animation frames
+    def import_dust_run_particles(self):
+        self.dust_run_particles = import_folder("graphics/character/dust_particles/run/")
 
     # @brief A function for animating the player
     def animate(self):
@@ -73,6 +85,23 @@ class Player(pygame.sprite.Sprite):
         elif self.on_ceiling:
             self.rect = self.image.get_rect(midtop = self.rect.midtop)
 
+    # @brief A function to animate the dust animations when the player is running
+    def run_dust_animation(self):
+        if self.status == "run" and self.on_ground:
+            self.dust_frame_index += self.dust_animation_speed
+            if self.dust_frame_index >= len(self.dust_run_particles):
+                self.dust_frame_index = 0
+
+            dust_particle = self.dust_run_particles[int(self.dust_frame_index)]
+
+            if self.facing_right:
+                position = self.rect.bottomleft - pygame.math.Vector2(6, 10) # Spawn the dust particles on the bottom left of the player
+                self.display_surface.blit(dust_particle, position)
+            else:
+                position = self.rect.bottomright - pygame.math.Vector2(6, 10) # Spawn the dust particles on the bottom left of the player
+                flipped_dust_image   = pygame.transform.flip(dust_particle, True, False)
+                self.display_surface.blit(flipped_dust_image, position)
+
     # @brief A function for getting player input
     def get_input(self):
         # This method of getting input may cause slight delay, look into a more
@@ -92,6 +121,7 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_UP] and self.on_ground: # Only allow the player to jump while on the ground
             self.jump()
+            self.create_jump_particles(self.rect.midbottom)
 
     # @brief A function to get the status of the player (are they jumping, running, falling, etc.?)
     def get_status(self):
@@ -124,3 +154,4 @@ class Player(pygame.sprite.Sprite):
         self.get_input()
         self.get_status()
         self.animate()
+        self.run_dust_animation()
