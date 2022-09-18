@@ -3,6 +3,7 @@ from turtle import Vec2D
 from tiles import Tile, StaticTile, Crate, Coin, Palm
 from settings import tile_size, screen_width
 from support import import_csv_layout, import_cut_graphics
+from enemy import Enemy
 
 class Level:
     # @brief A function for initializing the Level
@@ -34,6 +35,10 @@ class Level:
         # Background palm setup
         background_palm_layout = import_csv_layout(level_data["background palms"])
         self.background_sprites = self.create_tile_group(background_palm_layout, "background palms")
+
+        # Enemies setup
+        enemy_layout = import_csv_layout(level_data["enemies"])
+        self.enemies_sprites = self.create_tile_group(enemy_layout, "enemies")
 
 
     # @brief A function to create Tile groups
@@ -68,6 +73,8 @@ class Level:
                             sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_large", 64)
                     if type == "background palms":
                         sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_bg", 64)
+                    if type == "enemies":
+                        sprite = Enemy(tile_size, x, y)
 
                     sprite_group.add(sprite)
 
@@ -76,7 +83,7 @@ class Level:
     # @brief A function for running the Level
     def run(self):
 
-        # Background palm setup
+        # Displaying the background palm tiles
         self.background_sprites.update(self.world_shift)
         self.background_sprites.draw(self.display_surface)
 
@@ -96,7 +103,11 @@ class Level:
         self.coin_sprites.update(self.world_shift)
         self.coin_sprites.draw(self.display_surface)
 
-        # Foreground palm setup
+        # Displaying the enemy tiles
+        self.enemies_sprites.update(self.world_shift)
+        self.enemies_sprites.draw(self.display_surface)
+
+        # Displaying the foreground palm tiles
         self.foreground_sprites.update(self.world_shift)
         self.foreground_sprites.draw(self.display_surface)
 
