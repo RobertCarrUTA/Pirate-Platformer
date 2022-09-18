@@ -1,6 +1,6 @@
 import pygame
 from turtle import Vec2D
-from tiles import Tile, StaticTile, Crate, Coin
+from tiles import Tile, StaticTile, Crate, Coin, Palm
 from settings import tile_size, screen_width
 from support import import_csv_layout, import_cut_graphics
 
@@ -26,6 +26,10 @@ class Level:
         # Coin setup
         coin_layout = import_csv_layout(level_data["coins"])
         self.coin_sprites = self.create_tile_group(coin_layout, "coins")
+
+        # Foreground palm setup
+        foreground_palm_layout = import_csv_layout(level_data["foreground palms"])
+        self.foreground_sprites = self.create_tile_group(foreground_palm_layout, "foreground palms")
 
 
     # @brief A function to create Tile groups
@@ -53,6 +57,8 @@ class Level:
                             sprite = Coin(tile_size, x, y, "../graphics/coins/gold")
                         else:
                             sprite = Coin(tile_size, x, y, "../graphics/coins/silver")
+                    if type == "foreground palms":
+                        sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_small")
 
                     sprite_group.add(sprite)
 
@@ -76,3 +82,9 @@ class Level:
         # Displaying the coin tiles
         self.coin_sprites.update(self.world_shift)
         self.coin_sprites.draw(self.display_surface)
+
+        # Foreground palm setup
+        self.foreground_sprites.update(self.world_shift)
+        self.foreground_sprites.draw(self.display_surface)
+
+
