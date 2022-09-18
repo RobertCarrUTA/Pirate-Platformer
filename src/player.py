@@ -4,7 +4,7 @@ from support import import_folder
 
 class Player(pygame.sprite.Sprite):
     # @brief A function for initializing the Player
-    def __init__(self, position, surface):
+    def __init__(self, position, surface, create_jump_particles):
         super().__init__()
         self.import_character_assets() # Importing the animation images
         self.frame_index        = 0
@@ -17,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.dust_frame_index        = 0
         self.dust_animation_speed    = 0.15
         self.display_surface         = surface  # surface is passed inside level.py in setup_level()
+        self.create_jump_particles = create_jump_particles
 
         # Player movement
         self.direction              = pygame.math.Vector2(0, 0)     # A vector that allows our player to move - arguments (x, y)
@@ -43,7 +44,7 @@ class Player(pygame.sprite.Sprite):
             full_path = character_path + animation
             self.animations[animation] = import_folder(full_path)
 
-    # @brief
+    # @brief A function to import the running dust particle animation frames
     def import_dust_run_particles(self):
         self.dust_run_particles = import_folder("graphics/character/dust_particles/run/")
 
@@ -120,6 +121,7 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_UP] and self.on_ground: # Only allow the player to jump while on the ground
             self.jump()
+            self.create_jump_particles(self.rect.midbottom)
 
     # @brief A function to get the status of the player (are they jumping, running, falling, etc.?)
     def get_status(self):
