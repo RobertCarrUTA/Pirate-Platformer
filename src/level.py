@@ -13,7 +13,9 @@ class Level:
         self.display_surface = surface
         self.setup_level(level_data)
 
+        # Terrain setup
         terrain_layout = import_csv_layout(level_data["terrain"])
+        self.terrain_sprites = self.create_tile_group(terrain_layout, "terrain")
 
         # Moving the level left or right
         self.world_shift = 0
@@ -22,6 +24,22 @@ class Level:
         # Dust
         self.dust_sprite      = pygame.sprite.GroupSingle()
         self.player_on_ground = False
+
+    # @brief A function to create Tile groups
+    def create_tile_group(self, layout, type):
+        sprite_group = pygame.sprite.Group()
+
+        for row_index, row in enumerate(layout):   # Use enumerate to track the index of each row
+            for col_index, val in enumerate(row):
+                if val != "-1": # When terrain_layout is imported, all the numbers are strings
+                    x = col_index * tile_size
+                    y = row_index * tile_size
+
+                    if type == "terrain":
+                        sprite = Tile(tile_size, x, y) # Tile(tile_size, x, y) - how big is is going to be, where it is going to be
+                        sprite_group.add(sprite)
+
+        return sprite_group
 
     # @brief A function that creates the jump particles
     def create_jump_particles(self, position):
@@ -153,7 +171,7 @@ class Level:
 
         # Displaying the level tiles
         self.tiles.update(self.world_shift)
-        self.tiles.draw(self.display_surface)
+        self.terrain_sprites.draw(self.world_shift)
         self.scroll_x()
 
         # Displaying the player

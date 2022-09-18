@@ -23,4 +23,3 @@ def import_csv_layout(path):
             terrain_map.append(list(row))       # Putting row as a list makes it easier for us
         
         return terrain_map
-
