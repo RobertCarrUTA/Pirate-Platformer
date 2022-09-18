@@ -1,6 +1,6 @@
 import pygame
 from turtle import Vec2D
-from tiles import Tile, StaticTile, Crate, AnimatedTile
+from tiles import Tile, StaticTile, Crate, Coin
 from settings import tile_size, screen_width
 from support import import_csv_layout, import_cut_graphics
 
@@ -49,8 +49,10 @@ class Level:
                     if type == "crates":
                         sprite = Crate(tile_size, x, y) # There is no image to split up
                     if type == "coins":
-                        sprite = AnimatedTile(tile_size, x, y, "../graphics/coins/gold") # There is no image to split up
-
+                        if val == "0":
+                            sprite = Coin(tile_size, x, y, "../graphics/coins/gold")
+                        else:
+                            sprite = Coin(tile_size, x, y, "../graphics/coins/silver")
 
                     sprite_group.add(sprite)
 
