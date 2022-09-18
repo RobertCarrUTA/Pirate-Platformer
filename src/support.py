@@ -38,8 +38,8 @@ def import_cut_graphics(path):
         for col in range(tile_num_x):
             x           = col * tile_size
             y           = row * tile_size
-            new_surface = pygame.Surface((tile_size, tile_size), flags = pygame.SRCALPHA)
-            new_surface.blit(surface, (0, 0), pygame.Rect(x, y, tile_size, tile_size))  # We use (0, 0), because we always want to put the graphic on the top left of the new surface
+            new_surface = pygame.Surface((tile_size, tile_size), flags = pygame.SRCALPHA) # flags removes the black background we would get otherwise on some tiles
+            new_surface.blit(surface, (0, 0), pygame.Rect(x, y, tile_size, tile_size))    # We use (0, 0), because we always want to put the graphic on the top left of the new surface
             cut_tiles.append(new_surface)
     
     return cut_tiles

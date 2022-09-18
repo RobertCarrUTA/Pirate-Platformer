@@ -31,6 +31,10 @@ class Level:
         foreground_palm_layout = import_csv_layout(level_data["foreground palms"])
         self.foreground_sprites = self.create_tile_group(foreground_palm_layout, "foreground palms")
 
+        # Background palm setup
+        background_palm_layout = import_csv_layout(level_data["background palms"])
+        self.background_sprites = self.create_tile_group(background_palm_layout, "background palms")
+
 
     # @brief A function to create Tile groups
     def create_tile_group(self, layout, type):
@@ -62,6 +66,8 @@ class Level:
                             sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_small", 38)
                         if val == "1":
                             sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_large", 64)
+                    if type == "background palms":
+                        sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_bg", 64)
 
                     sprite_group.add(sprite)
 
@@ -70,17 +76,21 @@ class Level:
     # @brief A function for running the Level
     def run(self):
 
+        # Background palm setup
+        self.background_sprites.update(self.world_shift)
+        self.background_sprites.draw(self.display_surface)
+
         # Displaying the terrain tiles
         self.terrain_sprites.update(self.world_shift)
         self.terrain_sprites.draw(self.display_surface)
 
-        # Displaying the grass tiles
-        self.grass_sprites.update(self.world_shift)
-        self.grass_sprites.draw(self.display_surface)
-
         # Displaying the crate tiles
         self.crate_sprites.update(self.world_shift)
         self.crate_sprites.draw(self.display_surface)
+
+        # Displaying the grass tiles
+        self.grass_sprites.update(self.world_shift)
+        self.grass_sprites.draw(self.display_surface)
 
         # Displaying the coin tiles
         self.coin_sprites.update(self.world_shift)
@@ -89,5 +99,4 @@ class Level:
         # Foreground palm setup
         self.foreground_sprites.update(self.world_shift)
         self.foreground_sprites.draw(self.display_surface)
-
 
