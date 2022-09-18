@@ -40,6 +40,10 @@ class Level:
         enemy_layout = import_csv_layout(level_data["enemies"])
         self.enemies_sprites = self.create_tile_group(enemy_layout, "enemies")
 
+        # Constraint setup
+        constraint_layout = import_csv_layout(level_data["constraints"])
+        self.constraint_sprites = self.create_tile_group(constraint_layout, "constraints")
+
 
     # @brief A function to create Tile groups
     def create_tile_group(self, layout, type):
@@ -75,10 +79,20 @@ class Level:
                         sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_bg", 64)
                     if type == "enemies":
                         sprite = Enemy(tile_size, x, y)
+                    if type == "constraints":
+                        sprite = Tile(tile_size, x, y) # Being a Tile doesn't matter because it will not be shown to the player
 
                     sprite_group.add(sprite)
 
         return sprite_group
+
+    # @brief A function for changing the direction of the Enemy class
+    def enemy_collision_reverse(self):
+        # Check all of the enemy sprites and check if any of the sprites are colliding with any of the constraints
+        #   if they are, then make them run the other direction
+        for enemy in self.enemies_sprites.sprites():
+            if pygame.sprite.spritecollide(enemy, self.constraint_sprites, False):
+                enemy.reverse()
 
     # @brief A function for running the Level
     def run(self):
@@ -93,6 +107,8 @@ class Level:
 
         # Displaying the enemy tiles
         self.enemies_sprites.update(self.world_shift)
+        self.constraint_sprites.update(self.world_shift) # These exist but cannot be seen, they allow us to change the direction of the Enemy class
+        self.enemy_collision_reverse()
         self.enemies_sprites.draw(self.display_surface)
 
         # Displaying the crate tiles
