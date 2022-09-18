@@ -91,6 +91,10 @@ class Level:
         self.terrain_sprites.update(self.world_shift)
         self.terrain_sprites.draw(self.display_surface)
 
+        # Displaying the enemy tiles
+        self.enemies_sprites.update(self.world_shift)
+        self.enemies_sprites.draw(self.display_surface)
+
         # Displaying the crate tiles
         self.crate_sprites.update(self.world_shift)
         self.crate_sprites.draw(self.display_surface)
@@ -102,10 +106,6 @@ class Level:
         # Displaying the coin tiles
         self.coin_sprites.update(self.world_shift)
         self.coin_sprites.draw(self.display_surface)
-
-        # Displaying the enemy tiles
-        self.enemies_sprites.update(self.world_shift)
-        self.enemies_sprites.draw(self.display_surface)
 
         # Displaying the foreground palm tiles
         self.foreground_sprites.update(self.world_shift)
