@@ -1,10 +1,10 @@
 import pygame
 from turtle import Vec2D
 from particles import ParticleEffect
-from tiles import Tile
+from tiles import Tile, StaticTile
 from settings import tile_size, screen_width
 from player import Player 
-from support import import_csv_layout
+from support import import_csv_layout, import_cut_graphics
 
 class Level:
     # @brief A function for initializing the Level
@@ -29,6 +29,8 @@ class Level:
     def create_tile_group(self, layout, type):
         sprite_group = pygame.sprite.Group()
 
+        print(layout)
+
         for row_index, row in enumerate(layout):   # Use enumerate to track the index of each row
             for col_index, val in enumerate(row):
                 if val != "-1": # When terrain_layout is imported, all the numbers are strings
@@ -36,8 +38,12 @@ class Level:
                     y = row_index * tile_size
 
                     if type == "terrain":
-                        sprite = Tile(tile_size, x, y) # Tile(tile_size, x, y) - how big is is going to be, where it is going to be
-                        sprite_group.add(sprite)
+                        terrain_tile_list   = import_cut_graphics('../graphics/terrain/terrain_tiles.png')
+                        print(terrain_tile_list[int(val)])
+                        tile_surface        = terrain_tile_list[int(val)] # Selecting the right tile based on what value we are currently looping over
+                        sprite              = StaticTile(tile_size, x, y, tile_surface)
+                    
+                    sprite_group.add(sprite)
 
         return sprite_group
 
