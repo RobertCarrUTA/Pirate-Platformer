@@ -85,7 +85,7 @@ class Player(pygame.sprite.Sprite):
         elif self.on_ceiling:
             self.rect = self.image.get_rect(midtop = self.rect.midtop)
 
-    # @brief
+    # @brief A function to animate the dust animations when the player is running
     def run_dust_animation(self):
         if self.status == "run" and self.on_ground:
             self.dust_frame_index += self.dust_animation_speed
