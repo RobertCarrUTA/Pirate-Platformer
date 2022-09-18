@@ -58,7 +58,10 @@ class Level:
                         else:
                             sprite = Coin(tile_size, x, y, "../graphics/coins/silver")
                     if type == "foreground palms":
-                        sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_small")
+                        if val == "0":
+                            sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_small", 38)
+                        if val == "1":
+                            sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_large", 64)
 
                     sprite_group.add(sprite)
 
