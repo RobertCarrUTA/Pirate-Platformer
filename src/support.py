@@ -1,5 +1,5 @@
 import pygame
-import os
+from os import walk
 from csv import reader          # Used in import_csv_layout()
 from settings import tile_size  # Used in import_cut_graphic()
 

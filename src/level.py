@@ -1,6 +1,6 @@
 import pygame
 from turtle import Vec2D
-from tiles import Tile, StaticTile, Crate
+from tiles import Tile, StaticTile, Crate, AnimatedTile
 from settings import tile_size, screen_width
 from support import import_csv_layout, import_cut_graphics
 
@@ -23,6 +23,10 @@ class Level:
         crate_layout = import_csv_layout(level_data["crates"])
         self.crate_sprites = self.create_tile_group(crate_layout, "crates")
 
+        # Coin setup
+        coin_layout = import_csv_layout(level_data["coins"])
+        self.coin_sprites = self.create_tile_group(coin_layout, "coins")
+
 
     # @brief A function to create Tile groups
     def create_tile_group(self, layout, type):
@@ -44,6 +48,9 @@ class Level:
                         sprite = StaticTile(tile_size, x, y, tile_surface)
                     if type == "crates":
                         sprite = Crate(tile_size, x, y) # There is no image to split up
+                    if type == "coins":
+                        sprite = AnimatedTile(tile_size, x, y, "../graphics/coins/gold") # There is no image to split up
+
 
                     sprite_group.add(sprite)
 
@@ -63,3 +70,7 @@ class Level:
         # Displaying the crate tiles
         self.crate_sprites.update(self.world_shift)
         self.crate_sprites.draw(self.display_surface)
+
+        # Displaying the coin tiles
+        self.coin_sprites.update(self.world_shift)
+        self.coin_sprites.draw(self.display_surface)
