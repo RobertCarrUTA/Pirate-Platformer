@@ -29,7 +29,7 @@ class Level:
                     self.tiles.add(tile)
                 # If we find a cell in the row that has P, add a player sprite to that cell
                 if cell == "P":
-                    player_sprite = Player((x, y))
+                    player_sprite = Player((x, y), self.display_surface)
                     self.player.add(player_sprite)
     
     # @brief A function that scrolls the level in the x direction based on player position
