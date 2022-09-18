@@ -6,16 +6,24 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__()
         self.import_character_assets() # Importing the animation images
-        self.frame_index     = 0
-        self.animation_speed = 0.15
-        self.image = self.animations["idle"][self.frame_index]
-        self.rect = self.image.get_rect(topleft = position)
+        self.frame_index        = 0
+        self.animation_speed    = 0.15
+        self.image              = self.animations["idle"][self.frame_index]
+        self.rect               = self.image.get_rect(topleft = position)
         
         # Player Movement
         self.direction              = pygame.math.Vector2(0, 0)     # A vector that allows our player to move - arguments (x, y)
         self.movement_multiplier_x  = 6     # Movement multiplier that multiplies the movement in update(self)
         self.gravity                = 0.8
-        self.jump_speed             = -13   # Remember that to move up in the y-direction, it needs to be negative
+        self.jump_speed             = -16   # Remember that to move up in the y-direction, it needs to be negative
+
+        # Player status
+        self.status         = "idle"
+        self.facing_right   = True  # Player defaults to face right, gets changed in get_input() in player.py based on player movement
+        self.on_ground      = False # Determined in level.py during vertical_movement_collision()
+        self.on_ceiling     = False # Determined in level.py during vertical_movement_collision()
+        self.on_left        = False # Determined in level.py during horizontal_movement_collision()
+        self.on_right       = False # Determined in level.py during horizontal_movement_collision()
 
     # @brief A function for importing all of the character animation frames
     def import_character_assets(self):
@@ -30,14 +38,40 @@ class Player(pygame.sprite.Sprite):
 
     # @brief A function for animating the player
     def animate(self):
-        animation = self.animations['run']
+        animation = self.animations[self.status]
 
         # Loop over the frame index
         self.frame_index += self.animation_speed
         if self.frame_index >= len(animation):
             self.frame_index = 0
         
-        self.image = animation[int(self.frame_index)]
+        image = animation[int(self.frame_index)]
+        if self.facing_right:
+            self.image = image
+        else:
+            flipped_image   = pygame.transform.flip(image, True, False) # Arguments - (surface, do you want to flip it horizontally, do you want to flip it vertically)
+            self.image      = flipped_image
+        
+        # Set the player rectangle
+        #   This stops our player from levitating on the floor. This happens because our animations without this can have the wrong origin point.
+        #       The animations can be different sizes, so each surface has a different dimension but our rect stays the same. Pygame alsways puts the surface on
+        #       the top left point of the rect, so it will look like the animation is floating a little bit.
+        #
+        #   We combat this by finding out what the player is colliding with, on_ground, etc., the we create a new rect on a new animation frame and set the
+        #       origin point to the collision point. We do the latter below.
+        if self.on_ground and self.on_right:
+            self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
+        elif self.on_ground and self.on_left:
+            self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
+        elif self.on_ground:
+            self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
+        # Collisions with the ceiling
+        elif self.on_ceiling and self.on_right:
+            self.rect = self.image.get_rect(topright = self.rect.topright)
+        elif self.on_ceiling and self.on_left:
+            self.rect = self.image.get_rect(topleft = self.rect.topleft)
+        elif self.on_ceiling:
+            self.rect = self.image.get_rect(midtop = self.rect.midtop)
 
     # @brief A function for getting player input
     def get_input(self):
@@ -46,16 +80,35 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_RIGHT]:
-            self.direction.x = 1  # We move in the x direction because right is a movement along the x axis
+            self.direction.x    = 1         # We move in the x direction because right is a movement along the x axis
+            self.facing_right   = True      # We have hit the right key, so we are now facing right
         elif keys[pygame.K_LEFT]:
-            self.direction.x = -1 # We move in the x direction because left is a movement along the x axis
+            self.direction.x    = -1        # We move in the x direction because left is a movement along the x axis
+            self.facing_right   = False     # We have hit the left key, so we are now facing left
         else:
             # We need to slow the player down to a halt when they stop pressing keys to move
             # This should slow the player down to 0 movement instead of instantly stopping
             self.direction.x = 0
 
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] and self.on_ground: # Only allow the player to jump while on the ground
             self.jump()
+
+    # @brief A function to get the status of the player (are they jumping, running, falling, etc.?)
+    def get_status(self):
+        # Just to do a brief overview of the logic here, we can find out the following states:
+        #   Jumping: We know a player is jumping when their direction.y is negative
+        #   Falling: We know a player is falling when their direction.y is positive
+        #   Running: We know a player is running when their direction.x is not 0
+        #   Idle:    We know a player is idle when both direction.x and direction.y are 0
+        if self.direction.y < 0:
+            self.status = "jump"
+        elif self.direction.y > 1: # We do > 1 because our player is never really has direction.y = 0, this is because our
+            self.status = "fall"   # player is always being moved back on top of the tile if they are standing on it
+        else:
+            if self.direction.x != 0:
+                self.status = "run"
+            else:
+                self.status = "idle"
 
     # @brief A function for applying gravity to the player
     def apply_gravity(self):
@@ -69,4 +122,5 @@ class Player(pygame.sprite.Sprite):
     # @brief A function for updating the player
     def update(self):
         self.get_input()
+        self.get_status()
         self.animate()
