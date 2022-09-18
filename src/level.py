@@ -12,38 +12,43 @@ class Level:
         self.display_surface = surface
         self.world_shift = -1
 
+        # Player setup
+        player_layout   = import_csv_layout(level_data["player"])
+        self.player     = pygame.sprite.GroupSingle()
+        self.goal       = pygame.sprite.GroupSingle()
+        self.player_setup(player_layout)
+
         # Terrain setup
-        terrain_layout = import_csv_layout(level_data["terrain"])
-        self.terrain_sprites = self.create_tile_group(terrain_layout, "terrain")
+        terrain_layout          = import_csv_layout(level_data["terrain"])
+        self.terrain_sprites    = self.create_tile_group(terrain_layout, "terrain")
 
         # Grass setup
-        grass_layout = import_csv_layout(level_data["grass"])
-        self.grass_sprites = self.create_tile_group(grass_layout, "grass")
+        grass_layout        = import_csv_layout(level_data["grass"])
+        self.grass_sprites  = self.create_tile_group(grass_layout, "grass")
 
         # Crates setup
-        crate_layout = import_csv_layout(level_data["crates"])
-        self.crate_sprites = self.create_tile_group(crate_layout, "crates")
+        crate_layout        = import_csv_layout(level_data["crates"])
+        self.crate_sprites  = self.create_tile_group(crate_layout, "crates")
 
         # Coin setup
-        coin_layout = import_csv_layout(level_data["coins"])
-        self.coin_sprites = self.create_tile_group(coin_layout, "coins")
+        coin_layout         = import_csv_layout(level_data["coins"])
+        self.coin_sprites   = self.create_tile_group(coin_layout, "coins")
 
         # Foreground palm setup
-        foreground_palm_layout = import_csv_layout(level_data["foreground palms"])
+        foreground_palm_layout  = import_csv_layout(level_data["foreground palms"])
         self.foreground_sprites = self.create_tile_group(foreground_palm_layout, "foreground palms")
 
         # Background palm setup
-        background_palm_layout = import_csv_layout(level_data["background palms"])
+        background_palm_layout  = import_csv_layout(level_data["background palms"])
         self.background_sprites = self.create_tile_group(background_palm_layout, "background palms")
 
         # Enemies setup
-        enemy_layout = import_csv_layout(level_data["enemies"])
-        self.enemies_sprites = self.create_tile_group(enemy_layout, "enemies")
+        enemy_layout            = import_csv_layout(level_data["enemies"])
+        self.enemies_sprites    = self.create_tile_group(enemy_layout, "enemies")
 
         # Constraint setup
-        constraint_layout = import_csv_layout(level_data["constraints"])
+        constraint_layout       = import_csv_layout(level_data["constraints"])
         self.constraint_sprites = self.create_tile_group(constraint_layout, "constraints")
-
 
     # @brief A function to create Tile groups
     def create_tile_group(self, layout, type):
@@ -86,6 +91,20 @@ class Level:
 
         return sprite_group
 
+    # @brief A function to set up the player and the end goal for the player
+    def player_setup(self, layout):
+        for row_index, row in enumerate(layout):   # Use enumerate to track the index of each row
+            for col_index, val in enumerate(row):
+                if val == "0": # "0" represents the player
+                    x = col_index * tile_size
+                    y = row_index * tile_size
+                if val == "1": # "0" represents the goal
+                    x           = col_index * tile_size
+                    y           = row_index * tile_size
+                    hat_surface = pygame.image.load("../graphics/character/hat.png").convert_alpha()
+                    sprite      = StaticTile(tile_size, x, y, hat_surface)
+                    self.goal.add(sprite)                
+
     # @brief A function for changing the direction of the Enemy class
     def enemy_collision_reverse(self):
         # Check all of the enemy sprites and check if any of the sprites are colliding with any of the constraints
@@ -127,3 +146,6 @@ class Level:
         self.foreground_sprites.update(self.world_shift)
         self.foreground_sprites.draw(self.display_surface)
 
+        # Displaying the player sprites
+        self.goal.update(self.world_shift)
+        self.goal.draw(self.display_surface)

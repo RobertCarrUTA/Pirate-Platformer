@@ -3,6 +3,7 @@ from tiles import AnimatedTile
 from random import randint
 
 class Enemy(AnimatedTile):
+    # @brief A function for initializing the Enemy
     def __init__(self, size, x, y):
         super().__init__(size, x, y, "../graphics/enemy/run")
         # To stop the enemy from floating above the ground, we need to take the size the enemy covers and lower them based on that.
@@ -23,7 +24,8 @@ class Enemy(AnimatedTile):
     # @brief A function that reverse the direction the Enemy is moving
     def reverse(self):
         self.speed *= -1
-    
+
+    # @brief A function that updates the Enemy
     def update(self, x_shift):
         self.rect.x += x_shift
         self.animate() # From AnimatedTile

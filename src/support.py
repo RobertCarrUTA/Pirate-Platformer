@@ -3,7 +3,7 @@ from os import walk
 from csv import reader          # Used in import_csv_layout()
 from settings import tile_size  # Used in import_cut_graphic()
 
-# @brief Import an animation folder and return the images back as a list
+# @brief A function that imports an animation folder and return the images back as a list
 def import_folder(path):
     surface_list = []
 
@@ -15,7 +15,7 @@ def import_folder(path):
 
     return surface_list
 
-# @brief Import the CSV layout of a level
+# @brief A function that import the CSV layout of a level
 def import_csv_layout(path):
     terrain_map = []
 
@@ -28,10 +28,10 @@ def import_csv_layout(path):
 
 # @brief A function for cutting a tile image into separate tiles as they would appear on Tiled
 def import_cut_graphics(path):
-    surface = pygame.image.load(path).convert_alpha()
-    tile_num_x = int(surface.get_size()[0] / tile_size)
-    tile_num_y = int(surface.get_size()[1] / tile_size)
-    cut_tiles = []
+    surface     = pygame.image.load(path).convert_alpha()
+    tile_num_x  = int(surface.get_size()[0] / tile_size)
+    tile_num_y  = int(surface.get_size()[1] / tile_size)
+    cut_tiles   = []
 
     # This for loop cuts our tiles into pieces like they would be in Tiled
     for row in range(tile_num_y):
