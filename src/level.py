@@ -1,10 +1,10 @@
-from turtle import Vec2D
 import pygame
+from turtle import Vec2D
 from particles import ParticleEffect
 from tiles import Tile
 from settings import tile_size, screen_width
-from player import Player
-from particles import ParticleEffect
+from player import Player 
+from support import import_csv_layout
 
 class Level:
     # @brief A function for initializing the Level
@@ -12,6 +12,8 @@ class Level:
         # Level setup
         self.display_surface = surface
         self.setup_level(level_data)
+
+        terrain_layout = import_csv_layout(level_data["terrain"])
 
         # Moving the level left or right
         self.world_shift = 0
@@ -145,6 +147,23 @@ class Level:
 
     # @brief A function for running the Level
     def run(self):
+        # Displaying the dust particles
+        self.dust_sprite.update(self.world_shift)
+        self.dust_sprite.draw(self.display_surface)
+
+        # Displaying the level tiles
+        self.tiles.update(self.world_shift)
+        self.tiles.draw(self.display_surface)
+        self.scroll_x()
+
+        # Displaying the player
+        self.player.update()
+        self.horizontal_movement_collision()
+        self.get_player_on_ground()
+        self.vertical_movement_collision()
+        self.create_landing_dust()
+        self.player.draw(self.display_surface)
+
         # Displaying the dust particles
         self.dust_sprite.update(self.world_shift)
         self.dust_sprite.draw(self.display_surface)

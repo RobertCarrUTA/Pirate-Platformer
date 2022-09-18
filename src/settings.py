@@ -13,8 +13,8 @@ level_map = [
 "XXXXXXXX  XXXXXX  XX XXXX ",
 ]
 
-tile_size       = 64
-# Since we will be having multiple files of code, having access to screen_width and
-# screen_height will be easier later on compared to it being in main.py
-screen_width    = 1200
-screen_height   = len(level_map) * tile_size # This needs to be relative to our level map (columns by rows, 7x10)
+vertical_tile_number = 11
+tile_size            = 64
+screen_height        = vertical_tile_number * tile_size # This needs to be relative to our level map (columns by rows, 7x10)
+screen_width         = 1200
+
