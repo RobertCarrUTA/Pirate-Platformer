@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.direction              = pygame.math.Vector2(0, 0)     # A vector that allows our player to move - arguments (x, y)
         self.movement_multiplier_x  = 6     # Movement multiplier that multiplies the movement in update(self)
         self.gravity                = 0.8
-        self.jump_speed             = -13   # Remember that to move up in the y-direction, it needs to be negative
+        self.jump_speed             = -16   # Remember that to move up in the y-direction, it needs to be negative
 
         # Player status
         self.status         = "idle"
@@ -83,7 +83,7 @@ class Player(pygame.sprite.Sprite):
             # This should slow the player down to 0 movement instead of instantly stopping
             self.direction.x = 0
 
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] and self.on_ground: # Only allow the player to jump while on the ground
             self.jump()
 
     # @brief A function to get the status of the player (are they jumping, running, falling, etc.?)
