@@ -35,7 +35,7 @@ class Player(pygame.sprite.Sprite):
 
     # @brief A function for importing all of the character animation frames
     def import_character_assets(self):
-        character_path = "graphics/character/"
+        character_path = "../graphics/character/"
         # Creating a dictionary of animations: we have a folder with folders named idle, run, jump and fall
         self.animations = {"idle":[], "run":[], "jump":[], "fall":[]}
 
@@ -46,7 +46,7 @@ class Player(pygame.sprite.Sprite):
 
     # @brief A function to import the running dust particle animation frames
     def import_dust_run_particles(self):
-        self.dust_run_particles = import_folder("graphics/character/dust_particles/run/")
+        self.dust_run_particles = import_folder("../graphics/character/dust_particles/run/")
 
     # @brief A function for animating the player
     def animate(self):
