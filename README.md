@@ -1,6 +1,6 @@
 *README.md and project still under contruction*
 # Pirate Platformer
-A Python-based pirate platformer using Pygame.
+A Python-based pirate platformer using Pygame. The maps were map with [Tiled Map Editor](https://thorbjorn.itch.io/tiled)
 
 
 ## Compile Instructions
