@@ -18,9 +18,7 @@ def import_folder(path):
 # @brief Import the CSV layout of a level
 def import_csv_layout(path):
     terrain_map = []
-    path = r"C:\Users\Robert\Desktop\GitHub\repos\Pirate-Platformer\levels\0\level_0_terrain.csv"
 
-    print("PATH" + path)
     with open(path) as map:
         level = reader(map, delimiter = ",")    # Arguments - (csv, delimiter)
         for row in level:
