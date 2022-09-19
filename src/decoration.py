@@ -38,9 +38,9 @@ class Water:
         self.water_sprites  = pygame.sprite.Group()
 
         for tile in range(tile_x_amount):
-            x = tile * water_tile_width + water_start
-            y = top
-            sprite = AnimatedTile(192, x, y, "../graphics/decoration/water")
+            x       = tile * water_tile_width + water_start
+            y       = top
+            sprite  = AnimatedTile(192, x, y, "../graphics/decoration/water")
             self.water_sprites.add(sprite)
     
     # @brief A function for drawing our water

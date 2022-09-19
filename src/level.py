@@ -145,6 +145,7 @@ class Level:
                 offset = pygame.math.Vector2(10, 15)
             else:
                 offset = pygame.math.Vector2(-10, 15)
+            
             fall_dust_particle = ParticleEffect(self.player.sprite.rect.midbottom - offset, "land")
             self.dust_sprite.add(fall_dust_particle)
 
@@ -158,10 +159,9 @@ class Level:
 
     # @brief A function for horizontal movement collision
     def horizontal_movement_collision(self):
-        player          = self.player.sprite
-        player.rect.x   += player.direction.x * player.speed
-
-        collidable_sprites = self.terrain_sprites.sprites() + self.crate_sprites.sprites() + self.foreground_sprites.sprites()
+        player              = self.player.sprite
+        player.rect.x       += player.direction.x * player.speed
+        collidable_sprites  = self.terrain_sprites.sprites() + self.crate_sprites.sprites() + self.foreground_sprites.sprites()
 
         # Testing for all the possible sprites we could collide with (crates, foreground palm trees, coins)
         for sprite in collidable_sprites:
@@ -192,10 +192,9 @@ class Level:
     
     # @brief A function for vertical movement collision
     def vertical_movement_collision(self):
-        player = self.player.sprite
+        player              = self.player.sprite
+        collidable_sprites  = self.terrain_sprites.sprites() + self.crate_sprites.sprites() + self.foreground_sprites.sprites()
         player.apply_gravity()
-        
-        collidable_sprites = self.terrain_sprites.sprites() + self.crate_sprites.sprites() + self.foreground_sprites.sprites()
 
         # Testing for all the possible sprites we could collide with (crates, foreground palm trees, coins)
         for sprite in collidable_sprites:  

@@ -35,7 +35,7 @@ class Player(pygame.sprite.Sprite):
 
     # @brief A function for importing all of the character animation frames
     def import_character_assets(self):
-        character_path = "../graphics/character/"
+        character_path  = "../graphics/character/"
         # Creating a dictionary of animations: we have a folder with folders named idle, run, jump and fall
         self.animations = {"idle":[], "run":[], "jump":[], "fall":[]}
 
@@ -56,7 +56,6 @@ class Player(pygame.sprite.Sprite):
         self.frame_index += self.animation_speed
         if self.frame_index >= len(animation):
             self.frame_index = 0
-        
         image = animation[int(self.frame_index)]
         if self.facing_right:
             self.image = image

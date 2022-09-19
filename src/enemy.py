@@ -10,7 +10,7 @@ class Enemy(AnimatedTile):
         #   We can do this by taking the size of the tile (64) and subtracting the height of the enemy image
         #   self.image.get_size()[1] will give us the y value of the image size
         self.rect.y += size - self.image.get_size()[1]
-        self.speed = randint(3, 5)
+        self.speed  = randint(3, 5)
 
     # @brief A function to make the Enemy move at a random speed
     def move(self):
