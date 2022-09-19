@@ -1,10 +1,10 @@
 import pygame
 from turtle import Vec2D
 from tiles import Tile, StaticTile, Crate, Coin, Palm
-from settings import tile_size, screen_width
+from settings import tile_size, screen_width, screen_height
 from support import import_csv_layout, import_cut_graphics
 from enemy import Enemy
-from decoration import Sky
+from decoration import Sky, Water
 
 class Level:
     # @brief A function for initializing the Level
@@ -52,7 +52,9 @@ class Level:
         self.constraint_sprites = self.create_tile_group(constraint_layout, "constraints")
 
         # Decoration setup
-        self.sky = Sky(8)
+        self.sky    = Sky(8)
+        level_width = len(terrain_layout[0]) * tile_size
+        self.water  = Water(screen_height - 40, level_width)
 
     # @brief A function to create Tile groups
     def create_tile_group(self, layout, type):
@@ -156,3 +158,6 @@ class Level:
         # Displaying the player sprites
         self.goal.update(self.world_shift)
         self.goal.draw(self.display_surface)
+
+        # Displaying the water
+        self.water.draw(self.display_surface, self.world_shift)
