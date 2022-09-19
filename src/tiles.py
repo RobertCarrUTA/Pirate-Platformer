@@ -31,7 +31,7 @@ class Crate(StaticTile):
 
         # We need to give an offset so the tile is not floating above the ground.
         #   Remember our tiles are 64x64
-        offset_y = y + size
+        offset_y  = y + size
         self.rect = self.image.get_rect(bottomleft = (x, offset_y))
 
 # Inherits the Tile class but contains additional attributes that make the Tile animated
@@ -39,9 +39,9 @@ class AnimatedTile(Tile):
     # @brief A function for initializing the AnimatedTile
     def __init__(self, size, x, y, path): # Now that we have multiple images, we now need a path to loop over those images
         super().__init__(size, x, y)
-        self.frames = import_folder(path)
+        self.frames      = import_folder(path)
         self.frame_index = 0
-        self.image = self.frames[self.frame_index]
+        self.image       = self.frames[self.frame_index]
     
     # @brief A function that animates the AnimatedTile
     def animate(self):
@@ -60,13 +60,13 @@ class Coin(AnimatedTile):
     # @brief A function for initializing the Coin
     def __init__(self, size, x, y, path):
         super().__init__(size, x, y, path)
-        center_x = x + int(size / 2) # We have a 64x64 square, find the middle by (size/2), then add x to it to get the center of the square
-        center_y = y + int(size / 2)
+        center_x  = x + int(size / 2) # We have a 64x64 square, find the middle by (size/2), then add x to it to get the center of the square
+        center_y  = y + int(size / 2)
         self.rect = self.image.get_rect(center = (center_x, center_y))
 
 class Palm(AnimatedTile):
     # @brief A function for initializing the Palm
     def __init__(self, size, x, y, path, offset):
         super().__init__(size, x, y, path)
-        offset_y = y - offset
+        offset_y          = y - offset
         self.rect.topleft = (x, offset_y)
