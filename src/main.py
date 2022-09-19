@@ -3,10 +3,10 @@
 # Pygame already, so comments for those basic things could be found here: https://github.com/RobertCarrUTA/Pixel-Runner-Python/blob/main/run.py
 
 import pygame
-import sys                      # Allows for sys.exit()
-from settings import *          # Allows for us to access variables in settings.py
-from level import Level         # Allows us to access the Level class
-from game_data import level_0   # Allows us to use the data from our exported level_0 on Tiled
+import sys                          # Allows for sys.exit()
+from settings   import *            # Allows for us to access variables in settings.py
+from level      import Level        # Allows us to access the Level class
+from game_data  import level_0      # Allows us to use the data from our exported level_0 on Tiled
 
 pygame.init()
 pygame.display.set_caption("Platformer") 

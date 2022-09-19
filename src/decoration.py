@@ -1,7 +1,8 @@
-from re import X
 import pygame
-from settings import vertical_tile_number, tile_size, screen_width
-from tiles import AnimatedTile
+from tiles      import AnimatedTile, StaticTile
+from settings   import vertical_tile_number, tile_size, screen_width
+from support    import import_folder
+from random     import randint, choice
 
 class Sky:
     # @brief A function to initialize the Sky
@@ -47,3 +48,24 @@ class Water:
         self.water_sprites.update(shift)
         self.water_sprites.draw(surface)
 
+class Clouds:
+    # @brief A function to initialize the Clouds
+    def __init__(self, horizon, level_width, cloud_number):
+        cloud_surface_list  = import_folder("../graphics/decoration/clouds")
+        self.cloud_sprites  = pygame.sprite.Group()
+        min_x = -screen_width
+        max_x = level_width
+        min_y = 0
+        max_y = horizon
+
+        for cloud in range(cloud_number):
+            cloud   = choice(cloud_surface_list)
+            x       = randint(min_x, max_x) 
+            y       = randint(min_y, max_y)
+            sprite  = StaticTile(0, x, y, cloud) # size can be 0 because the player does not interact with the clouds
+            self.cloud_sprites.add(sprite)
+
+    # @brief A function to draw the Clouds
+    def draw(self, surface, shift):
+        self.cloud_sprites.update(shift)
+        self.cloud_sprites.draw(surface)

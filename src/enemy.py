@@ -1,5 +1,5 @@
 import pygame
-from tiles import AnimatedTile
+from tiles  import AnimatedTile
 from random import randint
 
 class Enemy(AnimatedTile):
