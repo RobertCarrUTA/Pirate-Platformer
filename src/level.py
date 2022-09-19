@@ -140,7 +140,7 @@ class Level:
     # @brief A function for horizontal movement collision
     def horizontal_movement_collision(self):
         player          = self.player.sprite
-        player.rect.x   += player.direction.x * player.movement_multiplier_x
+        player.rect.x   += player.direction.x * player.speed
 
         collidable_sprites = self.terrain_sprites.sprites() + self.crate_sprites.sprites() + self.foreground_sprites.sprites()
 
@@ -195,6 +195,29 @@ class Level:
         if player.on_ceiling and player.direction.y > 0: # If the player is falling, they are no longer on the ceiling
             player.on_ceiling = False
 
+    # @brief A function that scrolls the level in the x direction based on player position
+    def scroll_x(self):
+        player      = self.player.sprite    # Lets us know of the player
+        player_x    = player.rect.centerx   # Lets us know where the player is located
+        direction_x = player.direction.x    # Lets us know what direction the player is going to move
+
+        # If they player is moving out of the left side of the screen
+        #
+        # To simulate the background moving as a camera following the player, we need to shift the world by the players movement speed, and set the player
+        # movement to 0. This makes it look like a camera is following them. We do "if player_x < (screen_width / 4) and direction_x < 0" because if we just
+        # did "if player_x < (screen_width / 4)" we would never get out of that condition and we would scroll left forever. direction_x < 0 means we are moving
+        # to the left. (screen_width / 4) allows the scrolling to be applied to any screen width and says if the player is within a quarter of the screen width
+        # to the leftmost edge of the window
+        if player_x < screen_width / 4 and direction_x < 0:
+            self.world_shift = 8
+            player.speed = 0
+        elif player_x > screen_width - (screen_width / 4) and direction_x > 0:
+            self.world_shift = -8
+            player.speed = 0
+        else:
+            self.world_shift = 0
+            player.speed = 8
+
     # @brief A function for running the Level
     def run(self):
 
@@ -236,6 +259,7 @@ class Level:
         self.player.update()
         self.horizontal_movement_collision()
         self.vertical_movement_collision()
+        self.scroll_x()
         self.player.draw(self.display_surface)
         self.goal.update(self.world_shift)
         self.goal.draw(self.display_surface)

@@ -20,10 +20,10 @@ class Player(pygame.sprite.Sprite):
         self.create_jump_particles   = create_jump_particles
 
         # Player movement
-        self.direction              = pygame.math.Vector2(0, 0)     # A vector that allows our player to move - arguments (x, y)
-        self.movement_multiplier_x  = 6     # Movement multiplier that multiplies the movement in update(self)
-        self.gravity                = 0.8
-        self.jump_speed             = -16   # Remember that to move up in the y-direction, it needs to be negative
+        self.direction      = pygame.math.Vector2(0, 0) # A vector that allows our player to move - arguments (x, y)
+        self.speed          = 8     # Movement multiplier that multiplies the movement in update(self)
+        self.gravity        = 0.8
+        self.jump_speed     = -16   # Remember that to move up in the y-direction, it needs to be negative
 
         # Player status
         self.status         = "idle"
