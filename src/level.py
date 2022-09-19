@@ -4,13 +4,14 @@ from tiles import Tile, StaticTile, Crate, Coin, Palm
 from settings import tile_size, screen_width
 from support import import_csv_layout, import_cut_graphics
 from enemy import Enemy
+from decoration import Sky
 
 class Level:
     # @brief A function for initializing the Level
     def __init__(self, level_data, surface):
         # Level setup
         self.display_surface = surface
-        self.world_shift = -1
+        self.world_shift = -3
 
         # Player setup
         player_layout   = import_csv_layout(level_data["player"])
@@ -49,6 +50,9 @@ class Level:
         # Constraint setup
         constraint_layout       = import_csv_layout(level_data["constraints"])
         self.constraint_sprites = self.create_tile_group(constraint_layout, "constraints")
+
+        # Decoration setup
+        self.sky = Sky(8)
 
     # @brief A function to create Tile groups
     def create_tile_group(self, layout, type):
@@ -115,6 +119,9 @@ class Level:
 
     # @brief A function for running the Level
     def run(self):
+
+        # Displaying the sky
+        self.sky.draw(self.display_surface)
 
         # Displaying the background palm tiles
         self.background_sprites.update(self.world_shift)
