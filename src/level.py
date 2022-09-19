@@ -1,16 +1,17 @@
 import pygame
-from turtle import Vec2D
-from tiles import Tile, StaticTile, Crate, Coin, Palm
-from settings import tile_size, screen_width
-from support import import_csv_layout, import_cut_graphics
-from enemy import Enemy
+from turtle     import Vec2D
+from tiles      import Tile, StaticTile, Crate, Coin, Palm
+from settings   import tile_size, screen_width, screen_height
+from support    import import_csv_layout, import_cut_graphics
+from enemy      import Enemy
+from decoration import Sky, Water, Clouds
 
 class Level:
     # @brief A function for initializing the Level
     def __init__(self, level_data, surface):
         # Level setup
         self.display_surface = surface
-        self.world_shift = -1
+        self.world_shift = -3
 
         # Player setup
         player_layout   = import_csv_layout(level_data["player"])
@@ -49,6 +50,12 @@ class Level:
         # Constraint setup
         constraint_layout       = import_csv_layout(level_data["constraints"])
         self.constraint_sprites = self.create_tile_group(constraint_layout, "constraints")
+
+        # Decoration setup
+        self.sky    = Sky(8)
+        level_width = len(terrain_layout[0]) * tile_size
+        self.water  = Water(screen_height - 40, level_width)
+        self.clouds = Clouds(400, level_width, 30)
 
     # @brief A function to create Tile groups
     def create_tile_group(self, layout, type):
@@ -116,6 +123,10 @@ class Level:
     # @brief A function for running the Level
     def run(self):
 
+        # Displaying the sky
+        self.sky.draw(self.display_surface)
+        self.clouds.draw(self.display_surface, self.world_shift)
+
         # Displaying the background palm tiles
         self.background_sprites.update(self.world_shift)
         self.background_sprites.draw(self.display_surface)
@@ -149,3 +160,6 @@ class Level:
         # Displaying the player sprites
         self.goal.update(self.world_shift)
         self.goal.draw(self.display_surface)
+
+        # Displaying the water
+        self.water.draw(self.display_surface, self.world_shift)

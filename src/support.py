@@ -1,7 +1,7 @@
 import pygame
-from os import walk
-from csv import reader          # Used in import_csv_layout()
-from settings import tile_size  # Used in import_cut_graphic()
+from os         import walk
+from csv        import reader       # Used in import_csv_layout()
+from settings   import tile_size    # Used in import_cut_graphic()
 
 # @brief A function that imports an animation folder and return the images back as a list
 def import_folder(path):
