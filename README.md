@@ -1,4 +1,4 @@
-*README.md and project still under contruction*
+*README.md and project still under construction*
 # Pirate Platformer
 ![Alt text](https://github.com/RobertCarrUTA/Pirate-Platformer/blob/main/gif/pirate.gif)
 
