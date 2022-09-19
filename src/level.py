@@ -13,7 +13,8 @@ class Level:
     def __init__(self, level_data, surface):
         # Level setup
         self.display_surface = surface
-        self.world_shift = 0
+        self.world_shift     = 0
+        self.current_x       = None
 
         # Player setup
         player_layout   = import_csv_layout(level_data["player"])
@@ -22,7 +23,8 @@ class Level:
         self.player_setup(player_layout)
 
         # Dust setup
-        self.dust_sprite = pygame.sprite.GroupSingle()
+        self.dust_sprite        = pygame.sprite.GroupSingle()
+        self.player_on_ground   = False
 
         # Terrain setup
         terrain_layout          = import_csv_layout(level_data["terrain"])
@@ -128,6 +130,23 @@ class Level:
 
         jump_particle_sprite = ParticleEffect(position, "jump")
         self.dust_sprite.add(jump_particle_sprite)
+
+    # @brief A function to determine weather a player is on the ground
+    def get_player_on_ground(self):
+        if self.player.sprite.on_ground:
+            self.player_on_ground = True
+        else:
+            self.player_on_ground = False
+
+    # @brief A function to create the landing dust particles
+    def create_landing_dust(self):
+        if not self.player_on_ground and self.player.sprite.on_ground and not self.dust_sprite.sprites():
+            if self.player.sprite.facing_right:
+                offset = pygame.math.Vector2(10, 15)
+            else:
+                offset = pygame.math.Vector2(-10, 15)
+            fall_dust_particle = ParticleEffect(self.player.sprite.rect.midbottom - offset, "land")
+            self.dust_sprite.add(fall_dust_particle)
 
     # @brief A function for changing the direction of the Enemy class
     def enemy_collision_reverse(self):
@@ -255,10 +274,16 @@ class Level:
         self.foreground_sprites.update(self.world_shift)
         self.foreground_sprites.draw(self.display_surface)
 
+        # Dust particles
+        self.dust_sprite.update(self.world_shift)
+        self.dust_sprite.draw(self.display_surface)
+
         # Player sprites
         self.player.update()
         self.horizontal_movement_collision()
+        self.get_player_on_ground()
         self.vertical_movement_collision()
+        self.create_landing_dust()
         self.scroll_x()
         self.player.draw(self.display_surface)
         self.goal.update(self.world_shift)
