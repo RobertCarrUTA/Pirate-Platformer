@@ -3,7 +3,7 @@ from game_data import levels
 
 # @brief A class that shows the level nodes in the Overworld
 class Node(pygame.sprite.Sprite):
-    def __init__(self, position, status):
+    def __init__(self, position, status, icon_speed):
         super().__init__()
         self.image = pygame.Surface((100, 80))
         
@@ -15,13 +15,21 @@ class Node(pygame.sprite.Sprite):
         
         self.rect = self.image.get_rect(center = position)
 
+        # detection_node is used for us to have collision detection with the center of a Node
+        #   The below pygame.Rect() has to be relative to the speed because if we go too fast, we could skip the detection zone entirely
+        self.detection_zone = pygame.Rect(self.rect.centerx - (icon_speed / 2), self.rect.centery - (icon_speed / 2), icon_speed, icon_speed)
+
 # @brief A class that shows the player icon in the Overworld
 class Icon(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__()
-        self.image = pygame.Surface((20, 20))
+        self.position   = position
+        self.image      = pygame.Surface((20, 20))
         self.image.fill("blue")
-        self.rect  = self.image.get_rect(center = position)
+        self.rect       = self.image.get_rect(center = position)
+
+    def update(self):
+        self.rect.center = self.position # This allows us to have the right position of the center of the rectangle (with doubles, not int's)
 
 # @brief A class that  
 class Overworld:
@@ -30,6 +38,11 @@ class Overworld:
         self.display_surface = surface
         self.max_level       = max_level
         self.current_level   = start_level
+
+        # Movement logic
+        self.moving         = False
+        self.speed          = 8
+        self.move_direction = pygame.math.Vector2(0, 0)
 
         # Sprites
         self.setup_nodes()
@@ -44,11 +57,11 @@ class Overworld:
         #   index allows us to do this easily.
         for index, node_data in enumerate(levels.values()):
             if index <= self.max_level:
-                node_sprite = Node(node_data["node_position"], "available")
+                node_sprite = Node(node_data["node_position"], "available", self.speed)
                 self.nodes.add(node_sprite)
             else:
                 self.nodes.add(node_sprite)
-                node_sprite = Node(node_data["node_position"], "locked")
+                node_sprite = Node(node_data["node_position"], "locked", self.speed)
 
     # @brief A function that draws the paths between levels in the Overworld
     def draw_paths(self):
@@ -62,7 +75,68 @@ class Overworld:
         icon_sprite = Icon(self.nodes.sprites()[self.current_level].rect.center)
         self.icon.add(icon_sprite)
 
+    # @brief A function that allows the Icon to move between the levels
+    def input(self):
+        keys = pygame.key.get_pressed()
+
+        # I want to note 2 issues with the movement before they were fixed. This is for me to remember so I am going to put it down.
+        # 
+        # 1. The issue is if we press right, Pygame sees the first level node, then we go straight to the next level node really fast.
+        #       So our Icon movement will be something close to teh last vector we needed in the path to move to that node.
+        #       To fix this, we have to make sure that we are stopping our keyboard input once we reach the next level node.
+        #
+        #       So if we put our keyboard input if statements inside another if that checks for if the icon is moving, we can fix this.
+        # 
+        # 2. The second issue is that if we fix issue #1, our Icon still misses the center of the rectangle that represented the level we are moving to.
+        #       This is because in Pygame, rect's are represented by int's, not doubles. The position of a rect would look something like
+        #       (100, 150). If we do get_movement_data() and it needs to go to (100.2, 150.5), it can't, so it will miss the center.
+        #       In the line, self.move_direction = self.get_movement_data(), two doubles are returned. So of move_direction is (0.7, 1.2),
+        #       Pygame will convert it to (0, 1) to represent the position of a rectangle because rectangles are represented by ints in Pygame
+        #    
+        #       So to fix this, we create a new Icon attribute called self.position. This will be in the form of doubles. We use it in update_icon_position().
+        #       We use self.icon.sprite.position inside the function to allow us to get the position in the form of two doubles instead of two ints. We then
+        #       do self.rect.center = self.position inside of update() in the Icon class. This allows us to have the right position of the center of the rectangle
+        #       (with doubles, not int's). So then this issue is now fixed cause we can now move exactly to the point we want to move to.
+        #           [self.icon.sprite.position += self.move_direction * self.speed] vs [sprite.rect.center += self.move_direction * self.speed], former is more precise
+        #
+        if not self.moving:
+            if keys[pygame.K_RIGHT] and self.current_level < self.max_level: # If the player is on max_level, they shouldn't be able to go right
+                self.move_direction = self.get_movement_data("next")
+                self.current_level += 1
+                self.moving         = True # We are moving along a path to another level node
+            elif keys[pygame.K_LEFT] and self.current_level > 0:             # If the player is on level 0, they shouldn't be able to go left
+                self.move_direction = self.get_movement_data("previous")
+                self.current_level -= 1
+                self.moving         = True
+
+    # @brief A function that determines the arrow the Icon has to move to the next level
+    def get_movement_data(self, target):
+        start   = pygame.math.Vector2(self.nodes.sprites()[self.current_level].rect.center) # Look at the center of the Icon, set it to one of the current nodes, which once is determined by the current level
+        if target == "next":
+            end = pygame.math.Vector2(self.nodes.sprites()[self.current_level + 1].rect.center)
+        else:
+            end = pygame.math.Vector2(self.nodes.sprites()[self.current_level - 1].rect.center)
+
+        # Just to explain what is happening here, for example, the end node is position (300, 220) and the start node is (110, 400).
+        #   We subtract the end from the start, (300, 220) - (110, 400) and get (190, -180). This is the vector we use to move.
+        #   We just want the direction, so we have to normalize the vector.
+        return (end - start).normalize()
+
+    # @brief A function to update the Icon position
+    def update_icon_position(self):
+        if self.moving and self.move_direction:
+            self.icon.sprite.position += self.move_direction * self.speed # Using position from Icon allows us to get the position in the form of two doubles instead of two ints
+            target_node = self.nodes.sprites()[self.current_level]
+
+            # This blocks the Icon from moving forever, it stops once it reaches the center of the level node it moves to
+            if target_node.detection_zone.collidepoint(self.icon.sprite.position):
+                self.moving = False
+                self.move_direction = pygame.math.Vector2(0, 0)
+
     def run(self):
+        self.input()
         self.draw_paths()
+        self.update_icon_position()
+        self.icon.update()
         self.nodes.draw(self.display_surface)
         self.icon.draw(self.display_surface)
