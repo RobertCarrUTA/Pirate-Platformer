@@ -1,3 +1,4 @@
+from venv import create
 import pygame
 from game_data import levels
 
@@ -33,11 +34,12 @@ class Icon(pygame.sprite.Sprite):
 
 # @brief A class that  
 class Overworld:
-    def __init__(self, start_level, max_level, surface):
+    def __init__(self, start_level, max_level, surface, create_level):
         # Setup
         self.display_surface = surface
         self.max_level       = max_level
         self.current_level   = start_level
+        self.create_level    = create_level
 
         # Movement logic
         self.moving         = False
@@ -108,6 +110,8 @@ class Overworld:
                 self.move_direction = self.get_movement_data("previous")
                 self.current_level -= 1
                 self.moving         = True
+            elif keys[pygame.K_SPACE]:  # User presses space in the Overworld and goes into that level
+                self.create_level(self.current_level)
 
     # @brief A function that determines the arrow the Icon has to move to the next level
     def get_movement_data(self, target):
