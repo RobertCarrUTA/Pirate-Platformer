@@ -5,8 +5,9 @@
 import pygame
 import sys                          # Allows for sys.exit()
 from settings   import *            # Allows for us to access variables in settings.py
+from level      import Level        # Allows us to access the Level class
+from game_data  import level_0      # Allows us to use the data from our exported level_0 on Tiled
 from overworld  import Overworld
-from level      import Level
 
 class Game:
     def __init__(self):
@@ -44,7 +45,7 @@ while True:
             pygame.quit()
             sys.exit()
     
-    screen.fill("black")
+    screen.fill("grey")
     game.run()
 
     pygame.display.update()
