@@ -11,11 +11,14 @@ from level      import Level
 class Game:
     def __init__(self):
         self.max_level = 2 # Remember, level number starts at 0, then goes 1, 2, 3, etc. So level 3 is 4 levels
-        self.overworld = Overworld(0, self.max_level, screen) # Arguments - start_level, max_level, surface)
-        self.level = Level(1, screen)
+        self.overworld = Overworld(1, self.max_level, screen, self.create_level) # Arguments - start_level, max_level, surface)
+        self.level = Level(3, screen)
+
+    def create_level(self, current_level):
+        print(current_level)
 
     def run(self):
-        self.level.run()
+        self.overworld.run()
 
 pygame.init()
 pygame.display.set_caption("Platformer") 
