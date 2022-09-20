@@ -25,8 +25,7 @@ class Icon(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__()
         self.position   = position
-        self.image      = pygame.Surface((20, 20))
-        self.image.fill("blue")
+        self.image      = pygame.image.load("../graphics/overworld/hat.png").convert_alpha()
         self.rect       = self.image.get_rect(center = position)
 
     def update(self):
