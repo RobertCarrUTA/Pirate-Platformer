@@ -39,5 +39,12 @@ class Overworld:
                 self.nodes.add(node_sprite)
                 node_sprite = Node(node_data["node_position"], "locked")
 
+    # @brief A function that draws the paths between levels in the Overworld
+    def draw_paths(self):
+        # We need list comprehension that gets the node positions if they are below max_level
+        points = [node["node_position"] for node in levels.values()]
+        pygame.draw.lines(self.display_surface, "red", False, points, 6) # Arguments - (surface, color, fill, points, line_width)
+
     def run(self):
         self.nodes.draw(self.display_surface)
+        self.draw_paths()
