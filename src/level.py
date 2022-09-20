@@ -244,6 +244,16 @@ class Level:
             self.world_shift = 0
             player.speed = 8
 
+    # @brief A function that checks if the player fell off the screen
+    def check_death(self):
+        if self.player.sprite.rect.top > screen_height:
+            self.create_overworld(self.current_level, 0)
+
+    # @brief A function that checks if the player won by collecting the hat
+    def check_win(self):
+        if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
+            self.create_overworld(self.current_level, self.new_max_level)
+
     # @brief A function for running the Level
     def run(self):
 
@@ -295,6 +305,8 @@ class Level:
         self.player.draw(self.display_surface)
         self.goal.update(self.world_shift)
         self.goal.draw(self.display_surface)
+        self.check_death()
+        self.check_win()
 
         # Water
         self.water.draw(self.display_surface, self.world_shift)
