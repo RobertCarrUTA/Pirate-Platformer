@@ -1,24 +1,36 @@
-from venv import create
 import pygame
-from game_data import levels
+from game_data  import levels
+from support    import import_folder
 
 # @brief A class that shows the level nodes in the Overworld
 class Node(pygame.sprite.Sprite):
-    def __init__(self, position, status, icon_speed):
+    def __init__(self, position, status, icon_speed, path):
         super().__init__()
-        self.image = pygame.Surface((100, 80))
+        self.frames = import_folder(path)
+        self.frame_index = 0
+        self.image = self.frames[self.frame_index]
         
         # Showing which levels are available and which aren't
         if status == "available":
-            self.image.fill("red")
+            self.status = "available"
         else:
-            self.image.fill("grey")
+            self.status = "locked"
         
         self.rect = self.image.get_rect(center = position)
 
         # detection_node is used for us to have collision detection with the center of a Node
         #   The below pygame.Rect() has to be relative to the speed because if we go too fast, we could skip the detection zone entirely
         self.detection_zone = pygame.Rect(self.rect.centerx - (icon_speed / 2), self.rect.centery - (icon_speed / 2), icon_speed, icon_speed)
+
+    # @brief A function that animates the Node
+    def animate(self):
+        self.frame_index += 0.15
+        if self.frame_index >= len(self.frames):
+            self.frame_index = 0
+        self.image = self.frames[int(self.frame_index)]
+
+    def update(self):
+        self.animate()
 
 # @brief A class that shows the player icon in the Overworld
 class Icon(pygame.sprite.Sprite):
@@ -52,17 +64,16 @@ class Overworld:
     # @brief A function that goes through the node positions in game_data.py
     def setup_nodes(self):
         self.nodes = pygame.sprite.Group()
-        
+
         # We need to loop over our dictionaries and look for the node positions.
         #   If we find a node that is above or max_level, we want to grey it out.
         #   index allows us to do this easily.
         for index, node_data in enumerate(levels.values()):
             if index <= self.max_level:
-                node_sprite = Node(node_data["node_position"], "available", self.speed)
-                self.nodes.add(node_sprite)
+                node_sprite = Node(node_data["node_position"], "available", self.speed, node_data["node_graphics"])
             else:
-                self.nodes.add(node_sprite)
-                node_sprite = Node(node_data["node_position"], "locked", self.speed)
+                node_sprite = Node(node_data["node_position"], "locked", self.speed, node_data["node_graphics"])
+            self.nodes.add(node_sprite)
 
     # @brief A function that draws the paths between levels in the Overworld
     def draw_paths(self):
@@ -138,8 +149,10 @@ class Overworld:
 
     def run(self):
         self.input()
-        self.draw_paths()
         self.update_icon_position()
         self.icon.update()
+        self.nodes.update()
+
+        self.draw_paths()
         self.nodes.draw(self.display_surface)
         self.icon.draw(self.display_surface)
