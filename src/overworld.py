@@ -1,6 +1,7 @@
 import pygame
 from game_data import levels
 
+# @brief A class that shows the level nodes in the Overworld
 class Node(pygame.sprite.Sprite):
     def __init__(self, position, status):
         super().__init__()
@@ -14,6 +15,15 @@ class Node(pygame.sprite.Sprite):
         
         self.rect = self.image.get_rect(center = position)
 
+# @brief A class that shows the player icon in the Overworld
+class Icon(pygame.sprite.Sprite):
+    def __init__(self, position):
+        super().__init__()
+        self.image = pygame.Surface((20, 20))
+        self.image.fill("blue")
+        self.rect  = self.image.get_rect(center = position)
+
+# @brief A class that  
 class Overworld:
     def __init__(self, start_level, max_level, surface):
         # Setup
@@ -23,6 +33,7 @@ class Overworld:
 
         # Sprites
         self.setup_nodes()
+        self.setup_icon()
 
     # @brief A function that goes through the node positions in game_data.py
     def setup_nodes(self):
@@ -41,10 +52,17 @@ class Overworld:
 
     # @brief A function that draws the paths between levels in the Overworld
     def draw_paths(self):
-        # We need list comprehension that gets the node positions if they are below max_level
-        points = [node["node_position"] for node in levels.values()]
+        # We need list comprehension that gets the node positions if they are below max_level, and draws lines between them if they are below max_level
+        points = [node["node_position"] for index, node in enumerate(levels.values()) if index <= self.max_level]
         pygame.draw.lines(self.display_surface, "red", False, points, 6) # Arguments - (surface, color, fill, points, line_width)
 
+    # @brief A function that displays the Icon on the current level
+    def setup_icon(self):
+        self.icon = pygame.sprite.GroupSingle()
+        icon_sprite = Icon(self.nodes.sprites()[self.current_level].rect.center)
+        self.icon.add(icon_sprite)
+
     def run(self):
-        self.nodes.draw(self.display_surface)
         self.draw_paths()
+        self.nodes.draw(self.display_surface)
+        self.icon.draw(self.display_surface)
