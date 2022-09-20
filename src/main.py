@@ -5,14 +5,21 @@
 import pygame
 import sys                          # Allows for sys.exit()
 from settings   import *            # Allows for us to access variables in settings.py
-from level      import Level        # Allows us to access the Level class
-from game_data  import level_0      # Allows us to use the data from our exported level_0 on Tiled
+from overworld  import Overworld
+
+class Game:
+    def __init__(self):
+        self.max_level = 2 # Remember, level number starts at 0, then goes 1, 2, 3, etc. So level 3 is 4 levels
+        self.overworld = Overworld(0, self.max_level, screen) # Arguments - start_level, max_level, surface)
+
+    def run(self):
+        self.overworld.run()
 
 pygame.init()
 pygame.display.set_caption("Platformer") 
 screen          = pygame.display.set_mode((screen_width, screen_height))
 clock           = pygame.time.Clock()
-level           = Level(level_0, screen) # This allows us to load different levels as arguments very easily
+game            = Game()
 
 while True:
     for event in pygame.event.get():
@@ -20,8 +27,8 @@ while True:
             pygame.quit()
             sys.exit()
     
-    screen.fill("grey")
-    level.run()
+    screen.fill("black")
+    game.run()
 
     pygame.display.update()
     clock.tick(60)
