@@ -9,7 +9,7 @@ from overworld  import Overworld
 
 class Game:
     def __init__(self):
-        self.max_level = 3
+        self.max_level = 2 # Remember, level number starts at 0, then goes 1, 2, 3, etc. So level 3 is 4 levels
         self.overworld = Overworld(0, self.max_level, screen)
 
     def run(self):
@@ -27,7 +27,7 @@ while True:
             pygame.quit()
             sys.exit()
     
-    screen.fill("grey")
+    screen.fill("black")
     game.run()
 
     pygame.display.update()
