@@ -22,3 +22,9 @@ You will need to have [Python](https://www.python.org/) installed on your machin
 You will need to have [Python](https://www.python.org/) installed on your machine. After this you will need to make sure you have [Pygame](https://www.pygame.org/wiki/GettingStarted) installed. On Linux you can enter the following commands into the terminal:
 * To install [Pygame](https://www.pygame.org/wiki/GettingStarted): sudo apt-get install python3-pygame
 * To run in src folder: python3 main.py
+
+
+## Controls
+* Move left: Left Arrow
+* Move right: Right Arrow
+* Jump: Up Arrow
