@@ -66,7 +66,7 @@ class Overworld:
         # Sprites
         self.setup_nodes()
         self.setup_icon()
-        self.sky = Sky(8)
+        self.sky = Sky(8, "overworld")
 
     # @brief A function that goes through the node positions in game_data.py
     def setup_nodes(self):
@@ -84,9 +84,10 @@ class Overworld:
 
     # @brief A function that draws the paths between levels in the Overworld
     def draw_paths(self):
-        # We need list comprehension that gets the node positions if they are below max_level, and draws lines between them if they are below max_level
-        points = [node["node_position"] for index, node in enumerate(levels.values()) if index <= self.max_level]
-        pygame.draw.lines(self.display_surface, "#A04F45", False, points, 6) # Arguments - (surface, color, fill, points, line_width)
+        if self.max_level > 0:
+            # We need list comprehension that gets the node positions if they are below max_level, and draws lines between them if they are below max_level
+            points = [node["node_position"] for index, node in enumerate(levels.values()) if index <= self.max_level]
+            pygame.draw.lines(self.display_surface, "#A04F45", False, points, 6) # Arguments - (surface, color, fill, points, line_width)
 
     # @brief A function that displays the Icon on the current level
     def setup_icon(self):

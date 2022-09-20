@@ -6,7 +6,7 @@ from random     import randint, choice
 
 class Sky:
     # @brief A function to initialize the Sky
-    def __init__(self, horizon):
+    def __init__(self, horizon, style = "level"):
         #super().__init__
         self.top     = pygame.image.load("../graphics/decoration/sky/sky_top.png").convert()
         self.bottom  = pygame.image.load("../graphics/decoration/sky/sky_bottom.png").convert()
@@ -18,6 +18,26 @@ class Sky:
         self.bottom = pygame.transform.scale(self.bottom, (screen_width, tile_size))
         self.middle = pygame.transform.scale(self.middle, (screen_width, tile_size))
 
+        self.style = style
+        if self.style == "overworld":
+            # Pick random palms and place them randomly on the screen
+            palm_surfaces = import_folder("../graphics/overworld/palms")
+            self.palms = []
+            for surface in [choice(palm_surfaces) for image in range(10)]:
+                x    = randint(0, screen_width)
+                y    =  (self.horizon * tile_size) + randint(50, 100)
+                rect = surface.get_rect(midbottom = (x, y))
+                self.palms.append((surface, rect))
+
+            # Pick random clouds and place them randomly on the screen
+            cloud_surfaces = import_folder("../graphics/overworld/clouds")
+            self.clouds = []
+            for surface in [choice(cloud_surfaces) for image in range(10)]:
+                x    = randint(0, screen_width)
+                y    = randint(0, (self.horizon * tile_size) - 100)
+                rect = surface.get_rect(midbottom = (x, y))
+                self.clouds.append((surface, rect))
+
     # @brief A function to draw the sky
     def draw(self, surface):
         for row in range(vertical_tile_number):
@@ -28,6 +48,12 @@ class Sky:
                 surface.blit(self.middle, (0, y))
             else:
                 surface.blit(self.bottom, (0, y))
+            
+        if self.style == "overworld":
+            for palmn in self.palms:
+                surface.blit(palmn[0], palmn[1])
+            for cloud in self.clouds:
+                surface.blit(cloud[0], cloud[1])
 
 class Water:
     # @brief A function to initialize the Sky

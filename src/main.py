@@ -11,8 +11,8 @@ from overworld  import Overworld
 
 class Game:
     def __init__(self):
-        self.max_level  = 2 # Remember, level number starts at 0, then goes 1, 2, 3, etc. So level 3 is 4 levels
-        self.overworld  = Overworld(1, self.max_level, screen, self.create_level) # Arguments - start_level, max_level, surface)
+        self.max_level  = 0 # Remember, level number starts at 0, then goes 1, 2, 3, etc. So level 3 is 4 levels
+        self.overworld  = Overworld(0, self.max_level, screen, self.create_level) # Arguments - start_level, max_level, surface)
         self.status     = "overworld"
 
     # @brief A function to create the current level from when a player enters it on the Overworld
