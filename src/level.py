@@ -20,6 +20,7 @@ class Level:
         self.text_surface = self.font.render(level_content, True, "White")
         self.text_rect = self.text_surface.get_rect(center = (screen_width / 2, screen_height / 2))
 
+    # @brief A function that allows the player to enter and leave a level, also if pressing enter, unlock the next level
     def input(self):
         keys = pygame.key.get_pressed()
 
