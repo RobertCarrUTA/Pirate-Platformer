@@ -5,12 +5,13 @@
 import pygame
 import sys                          # Allows for sys.exit()
 from settings   import *            # Allows for us to access variables in settings.py
+from level      import Level        # Allows us to access the Level class
+from game_data  import level_0      # Allows us to use the data from our exported level_0 on Tiled
 from overworld  import Overworld
-from level      import Level
 
 class Game:
     def __init__(self):
-        self.max_level  = 2 # Remember, level number starts at 0, then goes 1, 2, 3, etc. So level 3 is 4 levels
+        self.max_level  = 1 # Remember, level number starts at 0, then goes 1, 2, 3, etc. So level 3 is 4 levels
         self.overworld  = Overworld(1, self.max_level, screen, self.create_level) # Arguments - start_level, max_level, surface)
         self.status     = "overworld"
 
@@ -44,7 +45,7 @@ while True:
             pygame.quit()
             sys.exit()
     
-    screen.fill("black")
+    screen.fill("grey")
     game.run()
 
     pygame.display.update()

@@ -1,18 +1,21 @@
-from venv import create
 import pygame
-from game_data import levels
+from game_data  import levels
+from support    import import_folder
+from decoration import Sky
 
 # @brief A class that shows the level nodes in the Overworld
 class Node(pygame.sprite.Sprite):
-    def __init__(self, position, status, icon_speed):
+    def __init__(self, position, status, icon_speed, path):
         super().__init__()
-        self.image = pygame.Surface((100, 80))
+        self.frames = import_folder(path)
+        self.frame_index = 0
+        self.image = self.frames[self.frame_index]
         
         # Showing which levels are available and which aren't
         if status == "available":
-            self.image.fill("red")
+            self.status = "available"
         else:
-            self.image.fill("grey")
+            self.status = "locked"
         
         self.rect = self.image.get_rect(center = position)
 
@@ -20,13 +23,27 @@ class Node(pygame.sprite.Sprite):
         #   The below pygame.Rect() has to be relative to the speed because if we go too fast, we could skip the detection zone entirely
         self.detection_zone = pygame.Rect(self.rect.centerx - (icon_speed / 2), self.rect.centery - (icon_speed / 2), icon_speed, icon_speed)
 
+    # @brief A function that animates the Node
+    def animate(self):
+        self.frame_index += 0.15
+        if self.frame_index >= len(self.frames):
+            self.frame_index = 0
+        self.image = self.frames[int(self.frame_index)]
+
+    def update(self):
+        if self.status == "available":
+            self.animate()
+        else:
+            tint_surface = self.image.copy()
+            tint_surface.fill("black", None, pygame.BLEND_RGB_MULT)
+            self.image.blit(tint_surface, (0, 0))
+
 # @brief A class that shows the player icon in the Overworld
 class Icon(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__()
         self.position   = position
-        self.image      = pygame.Surface((20, 20))
-        self.image.fill("blue")
+        self.image      = pygame.image.load("../graphics/overworld/hat.png").convert_alpha()
         self.rect       = self.image.get_rect(center = position)
 
     def update(self):
@@ -49,27 +66,28 @@ class Overworld:
         # Sprites
         self.setup_nodes()
         self.setup_icon()
+        self.sky = Sky(8, "overworld")
 
     # @brief A function that goes through the node positions in game_data.py
     def setup_nodes(self):
         self.nodes = pygame.sprite.Group()
-        
+
         # We need to loop over our dictionaries and look for the node positions.
         #   If we find a node that is above or max_level, we want to grey it out.
         #   index allows us to do this easily.
         for index, node_data in enumerate(levels.values()):
             if index <= self.max_level:
-                node_sprite = Node(node_data["node_position"], "available", self.speed)
-                self.nodes.add(node_sprite)
+                node_sprite = Node(node_data["node_position"], "available", self.speed, node_data["node_graphics"])
             else:
-                self.nodes.add(node_sprite)
-                node_sprite = Node(node_data["node_position"], "locked", self.speed)
+                node_sprite = Node(node_data["node_position"], "locked", self.speed, node_data["node_graphics"])
+            self.nodes.add(node_sprite)
 
     # @brief A function that draws the paths between levels in the Overworld
     def draw_paths(self):
-        # We need list comprehension that gets the node positions if they are below max_level, and draws lines between them if they are below max_level
-        points = [node["node_position"] for index, node in enumerate(levels.values()) if index <= self.max_level]
-        pygame.draw.lines(self.display_surface, "red", False, points, 6) # Arguments - (surface, color, fill, points, line_width)
+        if self.max_level > 0:
+            # We need list comprehension that gets the node positions if they are below max_level, and draws lines between them if they are below max_level
+            points = [node["node_position"] for index, node in enumerate(levels.values()) if index <= self.max_level]
+            pygame.draw.lines(self.display_surface, "#A04F45", False, points, 6) # Arguments - (surface, color, fill, points, line_width)
 
     # @brief A function that displays the Icon on the current level
     def setup_icon(self):
@@ -139,8 +157,11 @@ class Overworld:
 
     def run(self):
         self.input()
-        self.draw_paths()
         self.update_icon_position()
         self.icon.update()
+        self.nodes.update()
+
+        self.sky.draw(self.display_surface)
+        self.draw_paths()
         self.nodes.draw(self.display_surface)
         self.icon.draw(self.display_surface)
