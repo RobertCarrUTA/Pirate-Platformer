@@ -33,6 +33,16 @@ You will need to have [Python](https://www.python.org/) installed on your machin
 
 
 ## Controls
+
+
+### Player Controls
 * Move left: Left Arrow
 * Move right: Right Arrow
 * Jump: Up Arrow
+
+
+### Overworld Controls
+*Overworld level 1 will cause a crash right now, and other levels past it will too beause they are level 1*
+* Move to next level: Right Arrow
+* Move to previous level: Left Arrow
+* Enter Level: Space
