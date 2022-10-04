@@ -11,7 +11,7 @@ from game_data  import levels
 
 class Level:
     # @brief A function for initializing the Level
-    def __init__(self, current_level, surface, create_overworld):
+    def __init__(self, current_level, surface, create_overworld, change_coins):
         # Level setup
         self.display_surface = surface
         self.world_shift     = 0
@@ -23,12 +23,14 @@ class Level:
         level_data = levels[self.current_level]
         self.new_max_level = level_data["unlock"]
 
-
         # Player setup
         player_layout   = import_csv_layout(level_data["player"])
         self.player     = pygame.sprite.GroupSingle()
         self.goal       = pygame.sprite.GroupSingle()
         self.player_setup(player_layout)
+
+        # User Interface
+        self.change_coins = change_coins
 
         # Dust setup
         self.dust_sprite        = pygame.sprite.GroupSingle()
@@ -94,9 +96,9 @@ class Level:
                         sprite = Crate(tile_size, x, y) # There is no image to split up
                     if type == "coins":
                         if val == "0":
-                            sprite = Coin(tile_size, x, y, "../graphics/coins/gold")
+                            sprite = Coin(tile_size, x, y, "../graphics/coins/gold", 5)
                         else:
-                            sprite = Coin(tile_size, x, y, "../graphics/coins/silver")
+                            sprite = Coin(tile_size, x, y, "../graphics/coins/silver", 1)
                     if type == "foreground palms":
                         if val == "0":
                             sprite = Palm(tile_size, x, y, "../graphics/terrain/palm_small", 38)
@@ -254,6 +256,13 @@ class Level:
         if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
             self.create_overworld(self.current_level, self.new_max_level)
 
+    # @brief A function that checks for coin collisions between the player
+    def check_coin_collisions(self):
+        collided_coins = pygame.sprite.spritecollide(self.player.sprite, self.coin_sprites, True) # In case a player hits two coins at one time
+        if collided_coins:
+            for coin in collided_coins:
+                self.change_coins(coin.value)
+
     # @brief A function for running the Level
     def run(self):
 
@@ -307,6 +316,7 @@ class Level:
         self.goal.draw(self.display_surface)
         self.check_death()
         self.check_win()
+        self.check_coin_collisions()
 
         # Water
         self.water.draw(self.display_surface, self.world_shift)

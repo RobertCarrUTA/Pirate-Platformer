@@ -5,6 +5,7 @@ from decoration import Sky
 
 # @brief A class that shows the level nodes in the Overworld
 class Node(pygame.sprite.Sprite):
+    # @brief A function for initializing the Node
     def __init__(self, position, status, icon_speed, path):
         super().__init__()
         self.frames = import_folder(path)
@@ -30,6 +31,7 @@ class Node(pygame.sprite.Sprite):
             self.frame_index = 0
         self.image = self.frames[int(self.frame_index)]
 
+    # @brief A function for updating the Node
     def update(self):
         if self.status == "available":
             self.animate()
@@ -40,17 +42,20 @@ class Node(pygame.sprite.Sprite):
 
 # @brief A class that shows the player icon in the Overworld
 class Icon(pygame.sprite.Sprite):
+    # @brief A function for initializing the Icon
     def __init__(self, position):
         super().__init__()
         self.position   = position
         self.image      = pygame.image.load("../graphics/overworld/hat.png").convert_alpha()
         self.rect       = self.image.get_rect(center = position)
 
+    # @brief A function for updating the Icon
     def update(self):
         self.rect.center = self.position # This allows us to have the right position of the center of the rectangle (with doubles, not int's)
 
 # @brief A class that  
 class Overworld:
+    # @brief A function for initializing the Overworld
     def __init__(self, start_level, max_level, surface, create_level):
         # Setup
         self.display_surface = surface
@@ -155,6 +160,7 @@ class Overworld:
                 self.moving = False
                 self.move_direction = pygame.math.Vector2(0, 0)
 
+    # @brief A function for running the Overworld
     def run(self):
         self.input()
         self.update_icon_position()

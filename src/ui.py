@@ -1,6 +1,7 @@
 import pygame
 
 class UI:
+    # @brief A function for initializing the UI
     def __init__(self, surface):
         # Setup
         self.display_surface = surface
@@ -15,7 +16,6 @@ class UI:
         self.coin      = pygame.image.load("../graphics/ui/coin.png").convert_alpha()
         self.coin_rect = self.coin.get_rect(topleft = (50, 61))
         self.font      = pygame.font.Font("../graphics/ui/ARCADEPI.TTF", 30)
-
 
     # @brief A function that shows the health of the player
     def show_health(self, current_health, full_health):
