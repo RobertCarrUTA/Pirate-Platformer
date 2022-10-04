@@ -29,15 +29,15 @@ level_1 = {
 }
 
 level_2 = {
-    "terrain":          "../levels/1/level_1_terrain.csv",
-    "coins":            "../levels/1/level_1_coins.csv",
-    "foreground palms": "../levels/1/level_1_foreground_palms.csv",
-    "background palms": "../levels/1/level_1_background_palms.csv",
-    "crates":           "../levels/1/level_1_crates.csv",
-    "enemies":          "../levels/1/level_1_enemies.csv",
-    "constraints":      "../levels/1/level_1_constraints.csv",
-    "player":           "../levels/1/level_1_player.csv",
-    "grass":            "../levels/1/level_1_grass.csv",
+    "terrain":          "../levels/2/level_2_terrain.csv",
+    "coins":            "../levels/2/level_2_coins.csv",
+    "foreground palms": "../levels/2/level_2_foreground_palms.csv",
+    "background palms": "../levels/2/level_2_background_palms.csv",
+    "crates":           "../levels/2/level_2_crates.csv",
+    "enemies":          "../levels/2/level_2_enemies.csv",
+    "constraints":      "../levels/2/level_2_constraints.csv",
+    "player":           "../levels/2/level_2_player.csv",
+    "grass":            "../levels/2/level_2_grass.csv",
     "node_position":    (480, 610),
     "node_graphics":    "../graphics/overworld/2",
     "unlock":           3
