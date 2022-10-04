@@ -41,8 +41,8 @@ class Game:
             self.overworld.run()
         else:
             self.level.run()
-            self.ui.show_health(50, 100) # Arguments: (current_health, full_health)
-            self.ui.show_coins(12)       # Argument: (amount of coins)
+            self.ui.show_health(50, 100)   # Arguments: (current_health, full_health)
+            self.ui.show_coins(self.coins) # Argument: (amount of coins)
 
 pygame.init()
 pygame.display.set_caption("Platformer") 
