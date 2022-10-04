@@ -6,14 +6,23 @@ import pygame
 import sys                          # Allows for sys.exit()
 from settings   import *            # Allows for us to access variables in settings.py
 from level      import Level        # Allows us to access the Level class
-from game_data  import level_0      # Allows us to use the data from our exported level_0 on Tiled
 from overworld  import Overworld
+from ui         import UI
 
 class Game:
     def __init__(self):
-        self.max_level  = 1 # Remember, level number starts at 0, then goes 1, 2, 3, etc. So level 3 is 4 levels
-        self.overworld  = Overworld(1, self.max_level, screen, self.create_level) # Arguments - start_level, max_level, surface)
-        self.status     = "overworld"
+        # Game Attributes
+        self.max_level      = 1     # Remember, level number starts at 0, then goes 1, 2, 3, etc. So level 3 is 4 levels
+        self.current_health = 100   # Health, max health, and coin amount need to be in the Game class cause Player and Level are created over and over
+        self.max_health     = 100   #   Game stays persistent, so it allows us to keep track of these values across levels
+        self.coins          = 0
+
+        # Overworld Creation
+        self.overworld = Overworld(1, self.max_level, screen, self.create_level) # Arguments - start_level, max_level, surface)
+        self.status    = "overworld"
+
+        # User Interface
+        self.ui = UI(screen)
 
     # @brief A function to create the current level from when a player enters it on the Overworld
     def create_level(self, current_level):
@@ -32,6 +41,8 @@ class Game:
             self.overworld.run()
         else:
             self.level.run()
+            self.ui.show_health(self.current_health, self.max_health)   # Arguments: (current_health, full_health)
+            self.ui.show_coins(self.coins) # Argument: (amount of coins)
 
 pygame.init()
 pygame.display.set_caption("Platformer") 
