@@ -80,6 +80,8 @@ class Player(pygame.sprite.Sprite):
         else:
             self.image.set_alpha(255)
 
+        self.rect = self.image.get_rect(midbottom = self.rect.midbottom) # Stops the pirate from levitating off the floor
+
     # @brief A function to animate the dust animations when the Player is running
     def run_dust_animation(self):
         if self.status == "run" and self.on_ground:

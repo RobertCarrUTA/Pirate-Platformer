@@ -292,6 +292,10 @@ class Level:
         self.background_sprites.update(self.world_shift)
         self.background_sprites.draw(self.display_surface)
 
+        # Dust particles
+        self.dust_sprite.update(self.world_shift)
+        self.dust_sprite.draw(self.display_surface)
+
         # Terrain tiles
         self.terrain_sprites.update(self.world_shift)
         self.terrain_sprites.draw(self.display_surface)
@@ -320,9 +324,6 @@ class Level:
         self.foreground_sprites.update(self.world_shift)
         self.foreground_sprites.draw(self.display_surface)
 
-        # Dust particles
-        self.dust_sprite.update(self.world_shift)
-        self.dust_sprite.draw(self.display_surface)
 
         # Player sprites
         self.player.update()
