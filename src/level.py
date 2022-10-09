@@ -36,6 +36,9 @@ class Level:
         self.dust_sprite        = pygame.sprite.GroupSingle()
         self.player_on_ground   = False
 
+        # Explosion Particles
+        self.explosion_sprites = pygame.sprite.Group()
+
         # Terrain setup
         terrain_layout          = import_csv_layout(level_data["terrain"])
         self.terrain_sprites    = self.create_tile_group(terrain_layout, "terrain")
@@ -283,7 +286,13 @@ class Level:
 
                 # The player has landed on the top of an enemy
                 if enemy_top < player_bottom < enemy_center and self.player.sprite.direction.y >= 0:
-                    self.player.sprite.direction.y = -15 # The player should jump after landing on top of an enemy
+                    # Making the Player jump after landing on top of an Enemy
+                    self.player.sprite.direction.y = -15
+                    
+                    # Explosion animation
+                    explosion_sprite = ParticleEffect(enemy.rect.center, "explosion")
+                    self.explosion_sprites.add(explosion_sprite)
+
                     enemy.kill()
 
 
@@ -307,6 +316,8 @@ class Level:
         self.constraint_sprites.update(self.world_shift) # These exist but cannot be seen, they allow us to change the direction of the Enemy class
         self.enemy_collision_reverse()
         self.enemies_sprites.draw(self.display_surface)
+        self.explosion_sprites.update(self.world_shift)
+        self.explosion_sprites.draw(self.display_surface)
 
         # Crate tiles
         self.crate_sprites.update(self.world_shift)
