@@ -166,7 +166,7 @@ class Player(pygame.sprite.Sprite):
     def get_damage(self):
         # We need to have a period of invincibility after the player gets hurt or they will lose all their health
         if not self.invincible:
-            self.change_health(-10)
+            self.change_health(-50)
             self.invincible = True
             self.hurt_time  = pygame.time.get_ticks()
 
