@@ -11,7 +11,7 @@ from game_data  import levels
 
 class Level:
     # @brief A function for initializing the Level
-    def __init__(self, current_level, surface, create_overworld, change_coins):
+    def __init__(self, current_level, surface, create_overworld, change_coins, change_health):
         # Level setup
         self.display_surface = surface
         self.world_shift     = 0
@@ -27,7 +27,7 @@ class Level:
         player_layout   = import_csv_layout(level_data["player"])
         self.player     = pygame.sprite.GroupSingle()
         self.goal       = pygame.sprite.GroupSingle()
-        self.player_setup(player_layout)
+        self.player_setup(player_layout, change_health)
 
         # User Interface
         self.change_coins = change_coins
@@ -119,13 +119,13 @@ class Level:
         return sprite_group
 
     # @brief A function to set up the Player and the end goal for the Player
-    def player_setup(self, layout):
+    def player_setup(self, layout, change_health):
         for row_index, row in enumerate(layout):   # Use enumerate to track the index of each row
             for col_index, val in enumerate(row):
                 if val == "0": # "0" represents the player
                     x       = col_index * tile_size
                     y       = row_index * tile_size
-                    sprite  = Player((x, y), self.display_surface, self.create_jump_particles)
+                    sprite  = Player((x, y), self.display_surface, self.create_jump_particles, change_health)
                     self.player.add(sprite)
                 if val == "1": # "0" represents the goal
                     x           = col_index * tile_size
@@ -268,13 +268,6 @@ class Level:
 
     # @brief A function to detect collisions between the Enemy and the Player 
     def check_enemy_collisions(self):
-        # Alright, sorry, this may be heavily commented for my future reference. Again, no one is probably looking at this code, it is more for me and my
-        # learning and ability to remember what I did and why I did it.
-
-        # Check if the player is touching an enemy. We can do this by taking the bottom of the player and seeing if it is touching the top of the enemy.
-        #   If the player is within the top half of the enemy, we can say we are touching the enemy from the top. If not and there is a collision, then we
-        #   must be colliding with the enemy from the sides. Hopefully this is an easier approach than attempting to detect actual collisions and where
-        #   those collisions are taking place (working with horizontal_movement_collision() and vertical_movement_collision()).
         enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemies_sprites, False) # We want to use false as an argument because we want to decide if the enemy is killed
 
         # If there is anything in the enemy_collisions list
@@ -294,7 +287,8 @@ class Level:
                     self.explosion_sprites.add(explosion_sprite)
 
                     enemy.kill()
-
+                else:
+                    self.player.sprite.get_damage()
 
     # @brief A function for running the Level
     def run(self):
