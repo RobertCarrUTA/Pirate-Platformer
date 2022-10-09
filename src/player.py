@@ -1,6 +1,7 @@
-from turtle import position
 import pygame
+from turtle  import position
 from support import import_folder
+from math    import sin             # For access to the sin wave
 
 class Player(pygame.sprite.Sprite):
     # @brief A function for initializing the Player
@@ -34,7 +35,10 @@ class Player(pygame.sprite.Sprite):
         self.on_right       = False # Determined in level.py during horizontal_movement_collision()
 
         # Health management
-        self.change_health = change_health
+        self.invincibility_duration = 500
+        self.invincible             = False
+        self.change_health          = change_health
+        self.hurt_time              = 0
 
     # @brief A function for importing all of the character animation frames
     def import_character_assets(self):
@@ -65,6 +69,13 @@ class Player(pygame.sprite.Sprite):
         else:
             flipped_image   = pygame.transform.flip(image, True, False) # Arguments - (surface, do you want to flip it horizontally, do you want to flip it vertically)
             self.image      = flipped_image
+        
+        # Animate if the player is invincible
+        if self.invincible:
+            alpha = self.wave_value()
+            self.image.set_alpha(alpha)
+        else:
+            self.image.set_alpha(255)
         
         # Set the player rectangle
         #   This stops our player from levitating on the floor. This happens because our animations without this can have the wrong origin point.
@@ -153,7 +164,29 @@ class Player(pygame.sprite.Sprite):
 
     # @brief A function that damages the health of the Player
     def get_damage(self):
-        self.change_health(-10)
+        # We need to have a period of invincibility after the player gets hurt or they will lose all their health
+        if not self.invincible:
+            self.change_health(-10)
+            self.invincible = True
+            self.hurt_time  = pygame.time.get_ticks()
+
+    # @brief A function that sets the timer for the Player's invincibility
+    def invincibility_timer(self):
+        if self.invincible:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.hurt_time >= self.invincibility_duration:
+                self.invincible = False
+
+    # @brief A function that
+    def wave_value(self):
+        # We need to indicate that we are invincible, this will be flashing the transparency of the Player
+        #   To do this easily, we can use a sin wave. While the value of the sin wave is positive, the player will be visible.
+        #   If it is not positive, the player will be invisible.
+        value = sin(pygame.time.get_ticks())
+        if value >= 0:
+            return 255
+        else:
+            return 0
 
     # @brief A function for updating the Player
     def update(self):
@@ -161,3 +194,4 @@ class Player(pygame.sprite.Sprite):
         self.get_status()
         self.animate()
         self.run_dust_animation()
+        self.invincibility_timer()
