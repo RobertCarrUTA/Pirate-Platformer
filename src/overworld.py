@@ -73,6 +73,11 @@ class Overworld:
         self.setup_icon()
         self.sky = Sky(8, "overworld")
 
+        # Time
+        self.start_time   = pygame.time.get_ticks()
+        self.allow_input  = False
+        self.timer_length = 350 # Milliseconds
+
     # @brief A function that goes through the node positions in game_data.py
     def setup_nodes(self):
         self.nodes = pygame.sprite.Group()
@@ -124,7 +129,7 @@ class Overworld:
         #       (with doubles, not int's). So then this issue is now fixed cause we can now move exactly to the point we want to move to.
         #           [self.icon.sprite.position += self.move_direction * self.speed] vs [sprite.rect.center += self.move_direction * self.speed], former is more precise
         #
-        if not self.moving:
+        if not self.moving and self.allow_input:
             if keys[pygame.K_RIGHT] and self.current_level < self.max_level: # If the player is on max_level, they shouldn't be able to go right
                 self.move_direction = self.get_movement_data("next")
                 self.current_level += 1
@@ -160,8 +165,16 @@ class Overworld:
                 self.moving = False
                 self.move_direction = pygame.math.Vector2(0, 0)
 
+    # @brief A function that determines the time until a player can input in the Overworld
+    def input_timer(self):
+        if not self.allow_input:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.start_time >= self.timer_length:
+                self.allow_input = True
+
     # @brief A function for running the Overworld
     def run(self):
+        self.input_timer()
         self.input()
         self.update_icon_position()
         self.icon.update()
