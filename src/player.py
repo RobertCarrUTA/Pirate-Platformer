@@ -25,6 +25,7 @@ class Player(pygame.sprite.Sprite):
         self.speed          = 8     # Movement multiplier that multiplies the movement in update(self)
         self.gravity        = 0.8
         self.jump_speed     = -16   # Remember that to move up in the y-direction, it needs to be negative
+        self.collision_rect  = pygame.Rect(self.rect.topleft, (50, self.rect.height)) # This will allow us to only detect collisions with the pirate, not the sword (50 came from actually measuring the image height in Photoshop)
 
         # Player status
         self.status         = "idle"
@@ -62,13 +63,15 @@ class Player(pygame.sprite.Sprite):
         # Loop over the frame index
         self.frame_index += self.animation_speed
         if self.frame_index >= len(animation):
-            self.frame_index = 0
+            self.frame_index     = 0
         image = animation[int(self.frame_index)]
         if self.facing_right:
-            self.image = image
+            self.image           = image
+            self.rect.bottomleft = self.collision_rect.bottomleft # Make the collision rect follow the player rect
         else:
-            flipped_image   = pygame.transform.flip(image, True, False) # Arguments - (surface, do you want to flip it horizontally, do you want to flip it vertically)
-            self.image      = flipped_image
+            flipped_image         = pygame.transform.flip(image, True, False) # Arguments - (surface, do you want to flip it horizontally, do you want to flip it vertically)
+            self.image            = flipped_image
+            self.rect.bottomright = self.collision_rect.bottomright
         
         # Animate if the player is invincible
         if self.invincible:
@@ -76,27 +79,6 @@ class Player(pygame.sprite.Sprite):
             self.image.set_alpha(alpha)
         else:
             self.image.set_alpha(255)
-        
-        # Set the player rectangle
-        #   This stops our player from levitating on the floor. This happens because our animations without this can have the wrong origin point.
-        #       The animations can be different sizes, so each surface has a different dimension but our rect stays the same. Pygame alsways puts the surface on
-        #       the top left point of the rect, so it will look like the animation is floating a little bit.
-        #
-        #   We combat this by finding out what the player is colliding with, on_ground, etc., the we create a new rect on a new animation frame and set the
-        #       origin point to the collision point. We do the latter below.
-        if self.on_ground and self.on_right:
-            self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
-        elif self.on_ground and self.on_left:
-            self.rect = self.image.get_rect(bottomleft = self.rect.bottomleft)
-        elif self.on_ground:
-            self.rect = self.image.get_rect(midbottom = self.rect.midbottom)
-        # Collisions with the ceiling
-        elif self.on_ceiling and self.on_right:
-            self.rect = self.image.get_rect(topright = self.rect.topright)
-        elif self.on_ceiling and self.on_left:
-            self.rect = self.image.get_rect(topleft = self.rect.topleft)
-        elif self.on_ceiling:
-            self.rect = self.image.get_rect(midtop = self.rect.midtop)
 
     # @brief A function to animate the dust animations when the Player is running
     def run_dust_animation(self):
@@ -155,8 +137,8 @@ class Player(pygame.sprite.Sprite):
 
     # @brief A function for applying gravity to the Player
     def apply_gravity(self):
-        self.direction.y += self.gravity
-        self.rect.y      += self.direction.y
+        self.direction.y        += self.gravity
+        self.collision_rect.y   += self.direction.y
 
     # @brief A function that allows the Player to jump
     def jump(self):
