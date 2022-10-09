@@ -115,7 +115,7 @@ class Level:
 
         return sprite_group
 
-    # @brief A function to set up the player and the end goal for the player
+    # @brief A function to set up the Player and the end goal for the Player
     def player_setup(self, layout):
         for row_index, row in enumerate(layout):   # Use enumerate to track the index of each row
             for col_index, val in enumerate(row):
@@ -141,7 +141,7 @@ class Level:
         jump_particle_sprite = ParticleEffect(position, "jump")
         self.dust_sprite.add(jump_particle_sprite)
 
-    # @brief A function to determine weather a player is on the ground
+    # @brief A function to determine weather a Player is on the ground
     def get_player_on_ground(self):
         if self.player.sprite.on_ground:
             self.player_on_ground = True
@@ -223,7 +223,7 @@ class Level:
         if player.on_ceiling and player.direction.y > 0: # If the player is falling, they are no longer on the ceiling
             player.on_ceiling = False
 
-    # @brief A function that scrolls the level in the x direction based on player position
+    # @brief A function that scrolls the level in the x direction based on Player position
     def scroll_x(self):
         player      = self.player.sprite    # Lets us know of the player
         player_x    = player.rect.centerx   # Lets us know where the player is located
@@ -246,22 +246,45 @@ class Level:
             self.world_shift = 0
             player.speed = 8
 
-    # @brief A function that checks if the player fell off the screen
+    # @brief A function that checks if the Player fell off the screen
     def check_death(self):
         if self.player.sprite.rect.top > screen_height:
             self.create_overworld(self.current_level, 0)
 
-    # @brief A function that checks if the player won by collecting the hat
+    # @brief A function that checks if the Player won by collecting the hat
     def check_win(self):
         if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
             self.create_overworld(self.current_level, self.new_max_level)
 
-    # @brief A function that checks for coin collisions between the player
+    # @brief A function that checks for coin collisions between the Player
     def check_coin_collisions(self):
         collided_coins = pygame.sprite.spritecollide(self.player.sprite, self.coin_sprites, True) # In case a player hits two coins at one time
         if collided_coins:
             for coin in collided_coins:
                 self.change_coins(coin.value)
+
+    # @brief A function to detect collisions between the Enemy and the Player 
+    def check_enemy_collisions(self):
+        # Alright, sorry, this may be heavily commented for my future reference. Again, no one is probably looking at this code, it is more for me and my
+        # learning and ability to remember what I did and why I did it.
+
+        # Check if the player is touching an enemy. We can do this by taking the bottom of the player and seeing if it is touching the top of the enemy.
+        #   If the player is within the top half of the enemy, we can say we are touching the enemy from the top. If not and there is a collision, then we
+        #   must be colliding with the enemy from the sides. Hopefully this is an easier approach than attempting to detect actual collisions and where
+        #   those collisions are taking place (working with horizontal_movement_collision() and vertical_movement_collision()).
+        enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemies_sprites, False) # We want to use false as an argument because we want to decide if the enemy is killed
+
+        # If there is anything in the enemy_collisions list
+        if enemy_collisions:
+            for enemy in enemy_collisions:
+                enemy_center  = enemy.rect.centery              # Use enemy_center and enemy_top to find the top half of the enemy
+                enemy_top     = enemy.rect.top
+                player_bottom = self.player.sprite.rect.bottom  # Using enemy_center and enemy_top, determine if the player_bottom is between the two
+
+                # The player has landed on the top of an enemy
+                if enemy_top < player_bottom < enemy_center and self.player.sprite.direction.y >= 0:
+                    enemy.kill()
+
 
     # @brief A function for running the Level
     def run(self):
@@ -317,6 +340,7 @@ class Level:
         self.check_death()
         self.check_win()
         self.check_coin_collisions()
+        self.check_enemy_collisions()
 
         # Water
         self.water.draw(self.display_surface, self.world_shift)
