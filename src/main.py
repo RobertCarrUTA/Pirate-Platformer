@@ -27,7 +27,7 @@ class Game:
 
     # @brief A function to create the current level from when a player enters it on the Overworld
     def create_level(self, current_level):
-        self.level  = Level(current_level, screen, self.create_overworld, self.change_coins)
+        self.level  = Level(current_level, screen, self.create_overworld, self.change_coins, self.change_health)
         self.status = "level"
 
     # @brief A function that creates teh overworld based on a player exiting a level
@@ -40,6 +40,10 @@ class Game:
     # @brief A function that updates the current coins held by the player
     def change_coins(self, amount):
         self.coins += amount
+
+    # @brief A function that changes the health of the Player
+    def change_health(self, amount):
+        self.current_health += amount
 
     def run(self):
         if self.status == "overworld":

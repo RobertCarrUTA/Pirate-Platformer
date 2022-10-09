@@ -1,10 +1,11 @@
-from turtle import position
 import pygame
+from turtle  import position
 from support import import_folder
+from math    import sin             # For access to the sin wave
 
 class Player(pygame.sprite.Sprite):
     # @brief A function for initializing the Player
-    def __init__(self, position, surface, create_jump_particles):
+    def __init__(self, position, surface, create_jump_particles, change_health):
         super().__init__()
         self.import_character_assets() # Importing the animation images
         self.frame_index        = 0
@@ -33,6 +34,12 @@ class Player(pygame.sprite.Sprite):
         self.on_left        = False # Determined in level.py during horizontal_movement_collision()
         self.on_right       = False # Determined in level.py during horizontal_movement_collision()
 
+        # Health management
+        self.invincibility_duration = 500
+        self.invincible             = False
+        self.change_health          = change_health
+        self.hurt_time              = 0
+
     # @brief A function for importing all of the character animation frames
     def import_character_assets(self):
         character_path  = "../graphics/character/"
@@ -48,7 +55,7 @@ class Player(pygame.sprite.Sprite):
     def import_dust_run_particles(self):
         self.dust_run_particles = import_folder("../graphics/character/dust_particles/run/")
 
-    # @brief A function for animating the player
+    # @brief A function for animating the Player
     def animate(self):
         animation = self.animations[self.status]
 
@@ -62,6 +69,13 @@ class Player(pygame.sprite.Sprite):
         else:
             flipped_image   = pygame.transform.flip(image, True, False) # Arguments - (surface, do you want to flip it horizontally, do you want to flip it vertically)
             self.image      = flipped_image
+        
+        # Animate if the player is invincible
+        if self.invincible:
+            alpha = self.wave_value()
+            self.image.set_alpha(alpha)
+        else:
+            self.image.set_alpha(255)
         
         # Set the player rectangle
         #   This stops our player from levitating on the floor. This happens because our animations without this can have the wrong origin point.
@@ -84,7 +98,7 @@ class Player(pygame.sprite.Sprite):
         elif self.on_ceiling:
             self.rect = self.image.get_rect(midtop = self.rect.midtop)
 
-    # @brief A function to animate the dust animations when the player is running
+    # @brief A function to animate the dust animations when the Player is running
     def run_dust_animation(self):
         if self.status == "run" and self.on_ground:
             self.dust_frame_index += self.dust_animation_speed
@@ -101,7 +115,7 @@ class Player(pygame.sprite.Sprite):
                 flipped_dust_image   = pygame.transform.flip(dust_particle, True, False)
                 self.display_surface.blit(flipped_dust_image, position)
 
-    # @brief A function for getting player input
+    # @brief A function for getting Player input
     def get_input(self):
         # This method of getting input may cause slight delay, look into a more
         # responsive way to get player input
@@ -122,7 +136,7 @@ class Player(pygame.sprite.Sprite):
             self.jump()
             self.create_jump_particles(self.rect.midbottom)
 
-    # @brief A function to get the status of the player (are they jumping, running, falling, etc.?)
+    # @brief A function to get the status of the Player (are they jumping, running, falling, etc.?)
     def get_status(self):
         # Just to do a brief overview of the logic here, we can find out the following states:
         #   Jumping: We know a player is jumping when their direction.y is negative
@@ -139,18 +153,45 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.status = "idle"
 
-    # @brief A function for applying gravity to the player
+    # @brief A function for applying gravity to the Player
     def apply_gravity(self):
         self.direction.y += self.gravity
         self.rect.y      += self.direction.y
 
-    # @brief A function that allows the player to jump
+    # @brief A function that allows the Player to jump
     def jump(self):
         self.direction.y = self.jump_speed
 
-    # @brief A function for updating the player
+    # @brief A function that damages the health of the Player
+    def get_damage(self):
+        # We need to have a period of invincibility after the player gets hurt or they will lose all their health
+        if not self.invincible:
+            self.change_health(-10)
+            self.invincible = True
+            self.hurt_time  = pygame.time.get_ticks()
+
+    # @brief A function that sets the timer for the Player's invincibility
+    def invincibility_timer(self):
+        if self.invincible:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.hurt_time >= self.invincibility_duration:
+                self.invincible = False
+
+    # @brief A function that
+    def wave_value(self):
+        # We need to indicate that we are invincible, this will be flashing the transparency of the Player
+        #   To do this easily, we can use a sin wave. While the value of the sin wave is positive, the player will be visible.
+        #   If it is not positive, the player will be invisible.
+        value = sin(pygame.time.get_ticks())
+        if value >= 0:
+            return 255
+        else:
+            return 0
+
+    # @brief A function for updating the Player
     def update(self):
         self.get_input()
         self.get_status()
         self.animate()
         self.run_dust_animation()
+        self.invincibility_timer()
