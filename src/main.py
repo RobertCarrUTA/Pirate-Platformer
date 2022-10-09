@@ -18,9 +18,16 @@ class Game:
         self.max_health     = 100   #   Game stays persistent, so it allows us to keep track of these values across levels
         self.coins          = 0
 
+        # Audio
+        self.level_background_music     = pygame.mixer.Sound("../audio/level_music.wav")
+        self.overworld_background_music = pygame.mixer.Sound("../audio/overworld_music.wav")
+        self.level_background_music.set_volume(0.1)
+        self.overworld_background_music.set_volume(0.1)
+
         # Overworld Creation
         self.overworld = Overworld(0, self.max_level, screen, self.create_level) # Arguments - (start_level, max_level, surface)
         self.status    = "overworld"
+        self.overworld_background_music.play(loops = -1)
 
         # User Interface
         self.ui = UI(screen)
@@ -30,12 +37,18 @@ class Game:
         self.level  = Level(current_level, screen, self.create_overworld, self.change_coins, self.change_health)
         self.status = "level"
 
+        self.overworld_background_music.stop()
+        self.level_background_music.play(loops = -1)
+
     # @brief A function that creates teh overworld based on a player exiting a level
     def create_overworld(self, current_level, new_max_level):
         if new_max_level > self.max_level:
             self.max_level = new_max_level
         self.overworld  = Overworld(current_level, self.max_level, screen, self.create_level)
         self.status     = "overworld"
+
+        self.overworld_background_music.play(loops = -1)
+        self.level_background_music.stop()
 
     # @brief A function that updates the current coins held by the player
     def change_coins(self, amount):
@@ -53,6 +66,8 @@ class Game:
             self.max_level      = 0
             self.overworld      = Overworld(0, self.max_level, screen, self.create_level) # Arguments - (start_level, max_level, surface)
             self.status         = "overworld"
+            self.level_background_music.stop()
+            self.overworld_background_music.play(loops = -1)
 
     # @brief A function to run the game
     def run(self):

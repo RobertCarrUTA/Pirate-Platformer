@@ -17,11 +17,17 @@ class Level:
         self.world_shift     = 0
         self.current_x       = None
 
+        # Audio
+        self.coin_sound  = pygame.mixer.Sound("../audio/effects/coin.wav")
+        self.stomp_sound = pygame.mixer.Sound("../audio/effects/stomp.wav")
+        self.coin_sound.set_volume(0.1)
+        self.stomp_sound.set_volume(0.1)
+
         # Overworld connection
         self.create_overworld   = create_overworld
         self.current_level      = current_level
-        level_data = levels[self.current_level]
-        self.new_max_level = level_data["unlock"]
+        level_data              = levels[self.current_level]
+        self.new_max_level      = level_data["unlock"]
 
         # Player setup
         player_layout   = import_csv_layout(level_data["player"])
@@ -254,6 +260,7 @@ class Level:
     def check_coin_collisions(self):
         collided_coins = pygame.sprite.spritecollide(self.player.sprite, self.coin_sprites, True) # In case a player hits two coins at one time
         if collided_coins:
+            self.coin_sound.play()
             for coin in collided_coins:
                 self.change_coins(coin.value)
 
@@ -270,6 +277,7 @@ class Level:
 
                 # The player has landed on the top of an enemy
                 if enemy_top < player_bottom < enemy_center and self.player.sprite.direction.y >= 0:
+                    self.stomp_sound.play()
                     # Making the Player jump after landing on top of an Enemy
                     self.player.sprite.direction.y = -15
                     
