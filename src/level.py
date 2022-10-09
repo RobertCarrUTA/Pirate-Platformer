@@ -283,6 +283,7 @@ class Level:
 
                 # The player has landed on the top of an enemy
                 if enemy_top < player_bottom < enemy_center and self.player.sprite.direction.y >= 0:
+                    self.player.sprite.direction.y = -15 # The player should jump after landing on top of an enemy
                     enemy.kill()
 
 
