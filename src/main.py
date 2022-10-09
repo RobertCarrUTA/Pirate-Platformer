@@ -51,8 +51,8 @@ class Game:
             self.current_health = 100
             self.coins          = 0
             self.max_level      = 0
-            self.overworld = Overworld(0, self.max_level, screen, self.create_level) # Arguments - (start_level, max_level, surface)
-            self.status    = "overworld"
+            self.overworld      = Overworld(0, self.max_level, screen, self.create_level) # Arguments - (start_level, max_level, surface)
+            self.status         = "overworld"
 
     # @brief A function to run the game
     def run(self):

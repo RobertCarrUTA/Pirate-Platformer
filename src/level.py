@@ -172,14 +172,14 @@ class Level:
 
     # @brief A function for horizontal movement collision
     def horizontal_movement_collision(self):
-        player              = self.player.sprite
-        player.rect.x       += player.direction.x * player.speed
-        collidable_sprites  = self.terrain_sprites.sprites() + self.crate_sprites.sprites() + self.foreground_sprites.sprites()
+        player                   = self.player.sprite
+        player.collision_rect.x += player.direction.x * player.speed
+        collidable_sprites       = self.terrain_sprites.sprites() + self.crate_sprites.sprites() + self.foreground_sprites.sprites()
 
         # Testing for all the possible sprites we could collide with (crates, foreground palm trees, coins)
         for sprite in collidable_sprites:
             # The is player colliding with the rectangle of a tile
-            if sprite.rect.colliderect(player.rect): # Using .colliderect() rather than .spritecollide() makes this easier
+            if sprite.rect.colliderect(player.collision_rect): # Using .colliderect() rather than .spritecollide() makes this easier
                 
                 # In Pygame we cannot directly detect where the collision is taking place, so to work around this we have to
                 #   separate our collision and movement into vertical and horizontal movements as well as collisions.
@@ -190,19 +190,12 @@ class Level:
                 #   right side of the obstacle it collided with. This will allow us to work around this issue in Pygame.
                 
                 if player.direction.x < 0:      # Player is moving left and is colliding with the wall to the left
-                    player.rect.left    = sprite.rect.right
-                    player.on_left      = True
-                    self.current_x      = player.rect.left
+                    player.collision_rect.left = sprite.rect.right
+                    player.on_left             = True
                 elif player.direction.x > 0:     # Player is moving right and is colliding with the wall to the right
-                    player.rect.right   = sprite.rect.left
-                    player.on_right     = True
-                    self.current_x      = player.rect.right
+                    player.collision_rect.right = sprite.rect.left
+                    player.on_right             = True
 
-        if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):   # If the player is touching a wall to the left and stopped moving to the left
-            player.on_left  = False                                                             #   or moving to the right, we know we are not touching the left wall anymore
-        if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0): # If the player is touching a wall to the right and stopped moving to the left
-            player.on_right = False                                                             #   or moving to the right, we know we are not touching the right wall anymore
-    
     # @brief A function for vertical movement collision
     def vertical_movement_collision(self):
         player              = self.player.sprite
@@ -211,20 +204,18 @@ class Level:
 
         # Testing for all the possible sprites we could collide with (crates, foreground palm trees, coins)
         for sprite in collidable_sprites:  
-            if sprite.rect.colliderect(player.rect):    # The is player colliding with the rectangle of a tile
+            if sprite.rect.colliderect(player.collision_rect):
                 if player.direction.y > 0:              # Player is moving downward
-                    player.rect.bottom = sprite.rect.top
-                    player.direction.y = 0              # We need to cancel gravity increasing if we are standing on top of a tile
-                    player.on_ground = True
+                    player.collision_rect.bottom = sprite.rect.top
+                    player.direction.y           = 0    # We need to cancel gravity increasing if we are standing on top of a tile
+                    player.on_ground             = True
                 elif player.direction.y < 0:            # Player is moving upward
-                    player.rect.top = sprite.rect.bottom
-                    player.direction.y = 0              # Make the player fall back down if we hit a ceiling
-                    player.on_ceiling = True
+                    player.collision_rect.top = sprite.rect.bottom
+                    player.direction.y        = 0       # Make the player fall back down if we hit a ceiling
+                    player.on_ceiling         = True
 
         if player.on_ground and player.direction.y < 0 or player.direction.y > 1: # If the player is jumping or falling, the player cannot be on the floor anymore
             player.on_ground = False
-        if player.on_ceiling and player.direction.y > 0: # If the player is falling, they are no longer on the ceiling
-            player.on_ceiling = False
 
     # @brief A function that scrolls the level in the x direction based on Player position
     def scroll_x(self):
@@ -301,6 +292,10 @@ class Level:
         self.background_sprites.update(self.world_shift)
         self.background_sprites.draw(self.display_surface)
 
+        # Dust particles
+        self.dust_sprite.update(self.world_shift)
+        self.dust_sprite.draw(self.display_surface)
+
         # Terrain tiles
         self.terrain_sprites.update(self.world_shift)
         self.terrain_sprites.draw(self.display_surface)
@@ -329,9 +324,6 @@ class Level:
         self.foreground_sprites.update(self.world_shift)
         self.foreground_sprites.draw(self.display_surface)
 
-        # Dust particles
-        self.dust_sprite.update(self.world_shift)
-        self.dust_sprite.draw(self.display_surface)
 
         # Player sprites
         self.player.update()
