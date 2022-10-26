@@ -112,7 +112,7 @@ class Overworld:
         # I want to note 2 issues with the movement before they were fixed. This is for me to remember so I am going to put it down.
         # 
         # 1. The issue is if we press right, Pygame sees the first level node, then we go straight to the next level node really fast.
-        #       So our Icon movement will be something close to teh last vector we needed in the path to move to that node.
+        #       So our Icon movement will be something close to the last vector we needed in the path to move to that node.
         #       To fix this, we have to make sure that we are stopping our keyboard input once we reach the next level node.
         #
         #       So if we put our keyboard input if statements inside another if that checks for if the icon is moving, we can fix this.
