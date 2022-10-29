@@ -8,9 +8,9 @@ class Node(pygame.sprite.Sprite):
     # @brief A function for initializing the Node
     def __init__(self, position, status, icon_speed, path):
         super().__init__()
-        self.frames = import_folder(path)
+        self.frames      = import_folder(path)
         self.frame_index = 0
-        self.image = self.frames[self.frame_index]
+        self.image       = self.frames[self.frame_index]
         
         # Showing which levels are available and which aren't
         if status == "available":
@@ -120,7 +120,7 @@ class Overworld:
         # 2. The second issue is that if we fix issue #1, our Icon still misses the center of the rectangle that represented the level we are moving to.
         #       This is because in Pygame, rect's are represented by int's, not doubles. The position of a rect would look something like
         #       (100, 150). If we do get_movement_data() and it needs to go to (100.2, 150.5), it can't, so it will miss the center.
-        #       In the line, self.move_direction = self.get_movement_data(), two doubles are returned. So of move_direction is (0.7, 1.2),
+        #       In the line, self.move_direction = self.get_movement_data(), two doubles are returned. So if move_direction is (0.7, 1.2),
         #       Pygame will convert it to (0, 1) to represent the position of a rectangle because rectangles are represented by ints in Pygame
         #    
         #       So to fix this, we create a new Icon attribute called self.position. This will be in the form of doubles. We use it in update_icon_position().
@@ -158,11 +158,11 @@ class Overworld:
     def update_icon_position(self):
         if self.moving and self.move_direction:
             self.icon.sprite.position += self.move_direction * self.speed # Using position from Icon allows us to get the position in the form of two doubles instead of two ints
-            target_node = self.nodes.sprites()[self.current_level]
+            target_node                = self.nodes.sprites()[self.current_level]
 
             # This blocks the Icon from moving forever, it stops once it reaches the center of the level node it moves to
             if target_node.detection_zone.collidepoint(self.icon.sprite.position):
-                self.moving = False
+                self.moving         = False
                 self.move_direction = pygame.math.Vector2(0, 0)
 
     # @brief A function that determines the time until a player can input in the Overworld
